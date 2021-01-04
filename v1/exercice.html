@@ -18,7 +18,7 @@
 
         import { OrbitControls } from 'https://unpkg.com/three@0.121.1/examples/jsm/controls/OrbitControls.js';
 
-    let geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,sun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup;//init de toutes les var
+    let geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,sun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup, pivotPoint;//init de toutes les var
 
     //colors
     var orange = 0xff8000;
@@ -81,11 +81,44 @@
 
         // ******** THIRD PLANET (belt of asteroids) ********
         thirdPlanet = new THREE.SphereGeometry(12,50,50);
-        thirdPlanet = new THREE.Mesh(thirdPlanet,new THREE.MeshToonMaterial);
+        thirdPlanet = new THREE.Mesh(thirdPlanet,new THREE.MeshLambertMaterial);
         thirdPlanet.position.x = -200;
         thirdPlanet.rotation.x = 0.2;
 
         thirdPlanetGroup = new THREE.Group();
+
+        //asteroids
+        var asteroidMin = -50;
+        var asteroidMax = 50;
+        var asteroidMinHeight = -3;
+        var asteroidMaxHeight = 3;
+        var asteroidMaxRadius = 50;
+
+        pivotPoint = new THREE.Object3D();
+        thirdPlanet.add(pivotPoint);
+        
+        var asteroidGeometry = new THREE.BoxGeometry(1, 1, 1);
+        var asteroidMaterial = new THREE.MeshToonMaterial( /*{color:orange}*/ );
+        for(var i = 0; i < 10; i++){  
+            for(var j = 0; j < 10; j++){
+                //to make a circle shape with the asteroids (uniformally fill a circle)
+                var a = Math.random() * 2 * Math.PI;
+                var r = asteroidMaxRadius * Math.sqrt(Math.random());
+                var x = r * Math.cos(a) ;
+                var z = r * Math.sin(a) ;
+                var asteroidMesh = new THREE.Mesh(asteroidGeometry, asteroidMaterial);
+                asteroidMesh.position.x = x;
+                asteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
+                asteroidMesh.position.z = z;
+                //this method makes a square around the planet
+                // asteroidMesh.position.x = (Math.random() * (asteroidMax - asteroidMin) + asteroidMin);
+                // asteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
+                // asteroidMesh.position.z = (Math.random() * (asteroidMax - asteroidMin) + asteroidMin);
+                pivotPoint.add(asteroidMesh); 
+            }
+        }
+
+
         thirdPlanetGroup.add(thirdPlanet);
         scene.add(thirdPlanetGroup);
 
@@ -133,7 +166,7 @@
         camera.position.z=100;
 
         controls = new OrbitControls( camera , renderer.domElement );//controle de camera
-        controls.maxDistance = 500; //you can't escape the box ! (limit max de-zoom)
+        controls.maxDistance = 450; //you can't escape the box ! (limit max de-zoom)
 
         
         //********* a enlever ??? ***********
@@ -171,19 +204,19 @@
         var max = 1
         var min = -1
         options={  //var qui va nous permettre de setup une rotX et rotY et pour pouvoir aussi l'arreter
-            rotY_1PG:0.001,
-            rotY_2PG:0.001,
-            rotY_3PG:0.001,
-            stop:function (){
-                this.rotY_1PG = 0;
-                this.rotY_2PG = 0;
-                this.rotY_3PG = 0;
-            },
-            random:function(){
-                this.rotY_1PG = (Math.random() * (max - min) + min)/100;
-                this.rotY_2PG = (Math.random() * (max - min) + min)/100;
-                this.rotY_3PG = (Math.random() * (max - min) + min)/100;
-            }
+        rotY_1PG:0.001,
+        rotY_2PG:0.002,
+        rotY_3PG:0.0007,
+        stop:function (){
+            this.rotY_1PG = 0;
+            this.rotY_2PG = 0;
+            this.rotY_3PG = 0;
+        },
+        random:function(){
+            this.rotY_1PG = (Math.random() * (max - min) + min)/100;
+            this.rotY_2PG = (Math.random() * (max - min) + min)/100;
+            this.rotY_3PG = (Math.random() * (max - min) + min)/100;
+        }
 
     };
 
@@ -200,11 +233,13 @@
     // fonction pour loop
     function animate() {
 
-        var t =new Date().getTime()
+        var t = new Date().getTime()
         firstPlanetGroup.rotation.y += options.rotY_1PG;
         secondPlanetGroup.rotation.y += options.rotY_2PG;
         thirdPlanetGroup.rotation.y += options.rotY_3PG;
-    
+
+        pivotPoint.rotation.y = t / 3000;
+
 
         //donne au var une valeur entre -1 et 1
         /*posX=Math.cos(alpha);
