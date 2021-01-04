@@ -1,26 +1,22 @@
+<!-- Projet WebGL - L3 -->
+<!-- TAYLOR Matt / SOCHAJ Yoann / MAUREL Benjamin -->
+<!-- 04/01/2021 -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Apprendre</title>
-    <script  src="three.min.js">
-
-    </script>
-    <script  src="dat.gui.min.js">
-
-    </script>
-
-
-
+    <title>Projet WebGL - L3</title>
+    <script  src="three.min.js"></script>
+    <script  src="dat.gui.min.js"></script>
     <style>
         html, body { margin: 0; padding:0; overflow: hidden; }
     </style>
-
 </head>
 <body>
-<script type="module">
+    <script type="module">
 
-    import { OrbitControls } from 'https://unpkg.com/three@0.121.1/examples/jsm/controls/OrbitControls.js';
+        import { OrbitControls } from 'https://unpkg.com/three@0.121.1/examples/jsm/controls/OrbitControls.js';
 
     let geometry,geometry2,mesh2,mesh,secondGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,sun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3;//init de toutes les var
 
@@ -34,29 +30,23 @@
         // initialisation renderer
         renderer = new THREE.WebGLRenderer({ antialias: true });
 
-
         // initialisation de la taille
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         document.body.appendChild(renderer.domElement);
 
         // initialisation des geometry cube/sphere
-         geometryBox = new THREE.BoxGeometry(3, 3, 3); //geometry du cube
-         geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 ); //geomtry d'une sphere
-         sun =new THREE.SphereGeometry(20,50,50);
-         sunMaterial=new THREE.TextureLoader().load('sun.jpg');
-         sunMaterial=new THREE.MeshBasicMaterial({map:sunMaterial})
-         sun=new THREE.Mesh(sun,sunMaterial);
-         scene.add(sun);
+        geometryBox = new THREE.BoxGeometry(3, 3, 3); //geometry du cube
+        geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 ); //geomtry d'une sphere
+        sun =new THREE.SphereGeometry(20,50,50);
+        sunMaterial=new THREE.TextureLoader().load('sun.jpg');
+        sunMaterial=new THREE.MeshBasicMaterial({map:sunMaterial})
+        sun=new THREE.Mesh(sun,sunMaterial);
+        scene.add(sun);
 
+        firstPlanet=new THREE.SphereGeometry(8,50,50);
 
-
-
-
-
-         firstPlanet=new THREE.SphereGeometry(8,50,50);
-
-         firstPlanet=new THREE.Mesh(firstPlanet,new THREE.MeshToonMaterial);
+        firstPlanet=new THREE.Mesh(firstPlanet,new THREE.MeshToonMaterial);
         firstPlanet.position.x=50;
         firstPlanet.rotation.x=0.5;
 
@@ -65,22 +55,16 @@
 
         scene.add(firstPlanetGroup);
 
-
-
-         //scene.add(firstPlanet);
+        //scene.add(firstPlanet);
         secondPlanet=new THREE.SphereGeometry(8,50,50);
 
-         geometry = new THREE.RingGeometry( 10, 11, 30);
+        geometry = new THREE.RingGeometry( 10, 11, 30);
         geometry2 = new THREE.RingGeometry( 12, 13, 30);
 
 
         secondPlanet=new THREE.Mesh(secondPlanet,new THREE.MeshToonMaterial);
         secondPlanet.position.x=-100;
         secondPlanet.rotation.x=0.5;
-
-
-
-
 
         test = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
         mesh = new THREE.Mesh( geometry, test );
@@ -92,12 +76,12 @@
 
         secondGroup=new THREE.Group();
         secondGroup.add(mesh);
-            secondGroup.add(secondPlanet);
-            secondGroup.add(mesh2);
-       scene.add(secondGroup);
+        secondGroup.add(secondPlanet);
+        secondGroup.add(mesh2);
+        scene.add(secondGroup);
 
         //creation de notre materiel pour les objets
-         material = new THREE.MeshStandardMaterial()
+        material = new THREE.MeshStandardMaterial()
 
         // ajout de texture pour le fun
         // texture = new THREE.TextureLoader().load('texture.jpg');
@@ -106,7 +90,7 @@
         // On crée un cube a l'aide de notre geometry box et notre material
         cube = new THREE.Mesh(geometryBox, material);
 
-         // changer la position du cube et l'ajouter a la scene
+        // changer la position du cube et l'ajouter a la scene
         cube.position.z=5;
         scene.add(cube);
 
@@ -117,7 +101,7 @@
 
         skybox=new THREE.SphereGeometry(500,500,500);
         //skyboxMaterial=new THREE.MeshBasicMaterial({map: new THREE.TextureLoader("space.png"),side: THREE.DoubleSide});
-       // mat=new THREE.MeshFaceMaterial(skyboxMaterial);
+        // mat=new THREE.MeshFaceMaterial(skyboxMaterial);
         texture1 = new THREE.TextureLoader().load('space.png');
         skyboxMaterial=new THREE.MeshStandardMaterial({map:texture1,side:THREE.DoubleSide});
         test=new THREE.Mesh(skybox,skyboxMaterial);
@@ -132,18 +116,18 @@
 
         // creation des deux sphere +position
 
-         sphere=new THREE.Mesh(geometrySphere,material);
-         sphere2=new THREE.Mesh(geometrySphere,material);
-         //on initialise la position des sphere au depart
-         sphere.position.z=5;
-         sphere.position.x=8;
-         sphere2.position.z=5;
-         sphere2.position.x=-8;
+        sphere=new THREE.Mesh(geometrySphere,material);
+        sphere2=new THREE.Mesh(geometrySphere,material);
+        //on initialise la position des sphere au depart
+        sphere.position.z=5;
+        sphere.position.x=8;
+        sphere2.position.z=5;
+        sphere2.position.x=-8;
         scene.add(sphere);
         scene.add(sphere2);
 
 
-         axesHelper = new THREE.AxesHelper( 50 );
+        axesHelper = new THREE.AxesHelper( 50 );
         scene.add( axesHelper );
 
         //creation des deux lumieres ajouter au sphere
@@ -155,13 +139,13 @@
         sun.add(light2);
 
         //creation du plan + ajout de texture au plan
-         geometryPlane = new THREE.PlaneGeometry( 100, 100, 5 ); //on met un plan assez grand
-         plane = new THREE.Mesh( geometryPlane, planeMaterial );
-       // scene.add( plane );
+        geometryPlane = new THREE.PlaneGeometry( 100, 100, 5 ); //on met un plan assez grand
+        plane = new THREE.Mesh( geometryPlane, planeMaterial );
+        // scene.add( plane );
 
-            //creation du dat.gui
+        //creation du dat.gui
 
-         options={  //var qui va nous permettre de setup une rotX et rotY et pour pouvoir aussi l'arreter
+        options={  //var qui va nous permettre de setup une rotX et rotY et pour pouvoir aussi l'arreter
              rotX:0, //au debut cela vaut 0
              rotY:0,
 
@@ -169,10 +153,10 @@
                  this.rotX=0;
                  this.rotY=0;
              }
-        };
+         };
 
          gui = new dat.GUI({name: 'GUI'});
-         folder1 = gui.addFolder('rotation'); //creation d'un onglet
+        folder1 = gui.addFolder('rotation'); //creation d'un onglet
 
         gui.add(options,"rotX",-0.2,0.2).name("X").listen(); // slider de changement de rotation x et y entre -0.2 et 0.2
         gui.add(options,"rotY",-0.2,0.2).name("Y").listen();
@@ -191,7 +175,7 @@
 
 
         // Rotation du cube
-      /* cube.rotation.x += options.rotX;
+        /* cube.rotation.x += options.rotX;
         cube.rotation.y += options.rotY;*/
 
         //donne au var une valeur entre -1 et 1
@@ -203,12 +187,12 @@
         posX3=Math.sin(alpha3);*/
 
         //on incremente alpha ce qui va nous permettre d'avoir une autre valeur pour sin et cos
-       /* alpha+=0.005;
+        /* alpha+=0.005;
         alpha2+=0.01;
         alpha3+=0.005;*/
 
         //on augmente la valeur obtenue pour avoir un cercle plus grand
-       /* posX*=6; //cette valeur vaut 6 et l'autre vaut 10 pour eviter que les boules soit sur le meme axe circulaire
+        /* posX*=6; //cette valeur vaut 6 et l'autre vaut 10 pour eviter que les boules soit sur le meme axe circulaire
         posY*=6;
         posX2*=10;
         posY2*=10;
@@ -227,7 +211,7 @@
         cube.position.y=posY3;*/
 
         //pour que la camera suivent l'objet
-       // camera.lookAt(cube.position.x,cube.position.y,5);
+        // camera.lookAt(cube.position.x,cube.position.y,5);
 
         renderer.render(scene, camera);
     }
@@ -243,7 +227,6 @@
 
     init();
     animate();
-
 
 </script>
 </body>
