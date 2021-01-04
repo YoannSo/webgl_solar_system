@@ -18,7 +18,11 @@
 
         import { OrbitControls } from 'https://unpkg.com/three@0.121.1/examples/jsm/controls/OrbitControls.js';
 
-    let geometry,geometry2,mesh2,mesh,secondGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,sun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3;//init de toutes les var
+    let geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,sun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup;//init de toutes les var
+
+    //colors
+    var orange = 0xff8000;
+    var yellow = 0xF7B801;
 
     function init() {
         // initialisation scene
@@ -35,70 +39,85 @@
 
         document.body.appendChild(renderer.domElement);
 
-        // initialisation des geometry cube/sphere
+        // ******** SUN ********
         geometryBox = new THREE.BoxGeometry(3, 3, 3); //geometry du cube
         geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 ); //geomtry d'une sphere
-        sun =new THREE.SphereGeometry(20,50,50);
-        sunMaterial=new THREE.TextureLoader().load('sun.jpg');
-        sunMaterial=new THREE.MeshBasicMaterial({map:sunMaterial})
-        sun=new THREE.Mesh(sun,sunMaterial);
+        sun = new THREE.SphereGeometry(20,50,50);
+        sunMaterial= new THREE.TextureLoader().load('sun.jpg');
+        sunMaterial= new THREE.MeshBasicMaterial({map:sunMaterial})
+        sun = new THREE.Mesh(sun,sunMaterial);
         scene.add(sun);
 
+        // ******** FIRST PLANET ********
         firstPlanet=new THREE.SphereGeometry(8,50,50);
-
         firstPlanet=new THREE.Mesh(firstPlanet,new THREE.MeshToonMaterial);
         firstPlanet.position.x=50;
         firstPlanet.rotation.x=0.5;
-
         firstPlanetGroup=new THREE.Group();
         firstPlanetGroup.add(firstPlanet);
-
         scene.add(firstPlanetGroup);
 
-        //scene.add(firstPlanet);
-        secondPlanet=new THREE.SphereGeometry(8,50,50);
+        // ******** SECOND PLANET (2 rings) ********
+        secondPlanet = new THREE.SphereGeometry(8,50,50);
+        ring1 = new THREE.RingGeometry( 10, 11, 30);
+        ring2 = new THREE.RingGeometry( 12, 13, 30);
+        secondPlanet = new THREE.Mesh(secondPlanet,new THREE.MeshToonMaterial);
+        secondPlanet.position.x = -100;
+        secondPlanet.rotation.x = 0.5;
 
-        geometry = new THREE.RingGeometry( 10, 11, 30);
-        geometry2 = new THREE.RingGeometry( 12, 13, 30);
+        ringMaterial = new THREE.MeshBasicMaterial( { color: yellow, side: THREE.DoubleSide } );
+        mesh = new THREE.Mesh( ring1, ringMaterial );
+        mesh2 = new THREE.Mesh(ring2,ringMaterial);
+        mesh2.position.x = secondPlanet.position.x;
+        mesh2.rotation.x = 0.5;
+        mesh.position.x = secondPlanet.position.x;
+        mesh.rotation.x = 0.5;
+        secondPlanetGroup = new THREE.Group();
+        secondPlanetGroup.add(mesh);
+        secondPlanetGroup.add(secondPlanet);
+        secondPlanetGroup.add(mesh2);
+        scene.add(secondPlanetGroup);
 
 
-        secondPlanet=new THREE.Mesh(secondPlanet,new THREE.MeshToonMaterial);
-        secondPlanet.position.x=-100;
-        secondPlanet.rotation.x=0.5;
+        // ******** THIRD PLANET (belt of asteroids) ********
+        thirdPlanet = new THREE.SphereGeometry(12,50,50);
+        thirdPlanet = new THREE.Mesh(thirdPlanet,new THREE.MeshToonMaterial);
+        thirdPlanet.position.x = -200;
+        thirdPlanet.rotation.x = 0.2;
 
-        test = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
-        mesh = new THREE.Mesh( geometry, test );
-        mesh2=new THREE.Mesh(geometry2,test);
-        mesh2.position.x=secondPlanet.position.x;
-        mesh2.rotation.x=0.5;
-        mesh.position.x=secondPlanet.position.x;
-        mesh.rotation.x=0.5;
+        thirdPlanetGroup = new THREE.Group();
+        thirdPlanetGroup.add(thirdPlanet);
+        scene.add(thirdPlanetGroup);
 
-        secondGroup=new THREE.Group();
-        secondGroup.add(mesh);
-        secondGroup.add(secondPlanet);
-        secondGroup.add(mesh2);
-        scene.add(secondGroup);
+
+
+
+        //********* a enlever ??? ***********
 
         //creation de notre materiel pour les objets
-        material = new THREE.MeshStandardMaterial()
+        // material = new THREE.MeshStandardMaterial()
 
-        // ajout de texture pour le fun
-        // texture = new THREE.TextureLoader().load('texture.jpg');
-        // planeMaterial=new THREE.MeshStandardMaterial({map:texture});
+        // // ajout de texture pour le fun
+        // // texture = new THREE.TextureLoader().load('texture.jpg');
+        // // planeMaterial=new THREE.MeshStandardMaterial({map:texture});
 
-        // On crée un cube a l'aide de notre geometry box et notre material
-        cube = new THREE.Mesh(geometryBox, material);
+        // // On crée un cube a l'aide de notre geometry box et notre material
+        // cube = new THREE.Mesh(geometryBox, material);
 
-        // changer la position du cube et l'ajouter a la scene
-        cube.position.z=5;
-        scene.add(cube);
+        // // changer la position du cube et l'ajouter a la scene
+        // cube.position.z=5;
+        // scene.add(cube);
 
-        alpha=0; //variable qui vont nous permettre la trajectoire circulaire
-        alpha2=0;
-        alpha3=0;
+        // alpha=0; //variable qui vont nous permettre la trajectoire circulaire
+        // alpha2=0;
+        // alpha3=0;
+        // *************************************
+
+        
 
 
+
+        // ******** SPACE BACKGROUND ********
         skybox=new THREE.SphereGeometry(500,500,500);
         //skyboxMaterial=new THREE.MeshBasicMaterial({map: new THREE.TextureLoader("space.png"),side: THREE.DoubleSide});
         // mat=new THREE.MeshFaceMaterial(skyboxMaterial);
@@ -106,26 +125,30 @@
         skyboxMaterial=new THREE.MeshStandardMaterial({map:texture1,side:THREE.DoubleSide});
         test=new THREE.Mesh(skybox,skyboxMaterial);
         scene.add(test);
+
+
         // Position camera
-        camera.position.y =0 ; //changement position de la camera pour bien le voir la scene
+        camera.position.y =0; //changement position de la camera pour bien le voir la scene
         camera.position.x=100;
         camera.position.z=100;
-        //camera.lookAt(0,0,5) //on regarde le cube
 
-        controls = new OrbitControls( camera , renderer.domElement );//control de camera
+        controls = new OrbitControls( camera , renderer.domElement );//controle de camera
+        controls.maxDistance = 500; //you can't escape the box ! (limit max de-zoom)
 
+        
+        //********* a enlever ??? ***********
         // creation des deux sphere +position
 
-        sphere=new THREE.Mesh(geometrySphere,material);
-        sphere2=new THREE.Mesh(geometrySphere,material);
-        //on initialise la position des sphere au depart
-        sphere.position.z=5;
-        sphere.position.x=8;
-        sphere2.position.z=5;
-        sphere2.position.x=-8;
-        scene.add(sphere);
-        scene.add(sphere2);
-
+        // sphere=new THREE.Mesh(geometrySphere,material);
+        // sphere2=new THREE.Mesh(geometrySphere,material);
+        // //on initialise la position des sphere au depart
+        // sphere.position.z=5;
+        // sphere.position.x=8;
+        // sphere2.position.z=5;
+        // sphere2.position.x=-8;
+        // scene.add(sphere);
+        // scene.add(sphere2);
+        // **********************************
 
         axesHelper = new THREE.AxesHelper( 50 );
         scene.add( axesHelper );
@@ -145,16 +168,21 @@
 
         //creation du dat.gui
         gui = new dat.GUI({name: 'GUI'});
+        var max = 1
+        var min = -1
         options={  //var qui va nous permettre de setup une rotX et rotY et pour pouvoir aussi l'arreter
-            rotY_P1:0.001,
-            rotY_P2:0.001,
+            rotY_1PG:0.001,
+            rotY_2PG:0.001,
+            rotY_3PG:0.001,
             stop:function (){
-                this.rotY_P1 = 0;
-                this.rotY_P2 = 0;
+                this.rotY_1PG = 0;
+                this.rotY_2PG = 0;
+                this.rotY_3PG = 0;
             },
             random:function(){
-                this.rotY_P1 = Math.random()/100;
-                this.rotY_P2 = Math.random()/100;
+                this.rotY_1PG = (Math.random() * (max - min) + min)/100;
+                this.rotY_2PG = (Math.random() * (max - min) + min)/100;
+                this.rotY_3PG = (Math.random() * (max - min) + min)/100;
             }
 
     };
@@ -162,8 +190,9 @@
         //on cree un folder pour la rotation
         var rotationFolder = gui.addFolder("Rotation Speed"); 
         //sliders qui permettent de changer la vitesse de rotation des planetes
-        rotationFolder.add(options,"rotY_P1",-0.1,0.1).name("First Planet").listen();
-        rotationFolder.add(options,"rotY_P2",-0.1,0.1).name("Second Planet").listen(); 
+        rotationFolder.add(options,"rotY_1PG",-0.1,0.1).name("First Planet").listen();
+        rotationFolder.add(options,"rotY_2PG",-0.1,0.1).name("Second Planet").listen(); 
+        rotationFolder.add(options,"rotY_3PG",-0.1,0.1).name("Third Planet").listen();
         rotationFolder.add(options,"stop"); //bouton pour stop la rotation
         rotationFolder.add(options,"random"); //bouton pour une vitesse de rotation random
     }
@@ -172,15 +201,10 @@
     function animate() {
 
         var t =new Date().getTime()
-        firstPlanetGroup.rotation.y += options.rotY_P1;
-        secondGroup.rotation.y += options.rotY_P2;
-        // firstPlanetGroup.rotation.y=t*0.0005;
-        // secondGroup.rotation.y=t*0.001;
-
-
-        // Rotation du cube
-        /* cube.rotation.x += options.rotX;
-        cube.rotation.y += options.rotY;*/
+        firstPlanetGroup.rotation.y += options.rotY_1PG;
+        secondPlanetGroup.rotation.y += options.rotY_2PG;
+        thirdPlanetGroup.rotation.y += options.rotY_3PG;
+    
 
         //donne au var une valeur entre -1 et 1
         /*posX=Math.cos(alpha);
@@ -202,9 +226,6 @@
         posY2*=10;
         posX3*=15;
         posY3*=15;*/
-
-
-
 
         //on donne ensuite au sphere la position
         /*sphere.position.x=posX+cube.position.x;
