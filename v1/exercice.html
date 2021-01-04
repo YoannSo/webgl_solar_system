@@ -144,34 +144,38 @@
         // scene.add( plane );
 
         //creation du dat.gui
-
+        gui = new dat.GUI({name: 'GUI'});
         options={  //var qui va nous permettre de setup une rotX et rotY et pour pouvoir aussi l'arreter
-             rotX:0, //au debut cela vaut 0
-             rotY:0,
+            rotY_P1:0.001,
+            rotY_P2:0.001,
+            stop:function (){
+                this.rotY_P1 = 0;
+                this.rotY_P2 = 0;
+            },
+            random:function(){
+                this.rotY_P1 = Math.random()/100;
+                this.rotY_P2 = Math.random()/100;
+            }
 
-             stop:function (){
-                 this.rotX=0;
-                 this.rotY=0;
-             }
-         };
+    };
 
-         gui = new dat.GUI({name: 'GUI'});
-        folder1 = gui.addFolder('rotation'); //creation d'un onglet
-
-        gui.add(options,"rotX",-0.2,0.2).name("X").listen(); // slider de changement de rotation x et y entre -0.2 et 0.2
-        gui.add(options,"rotY",-0.2,0.2).name("Y").listen();
-        gui.add(options,"stop"); //bouton pour stop la rotation
-
-
+        //on cree un folder pour la rotation
+        var rotationFolder = gui.addFolder("Rotation Speed"); 
+        //sliders qui permettent de changer la vitesse de rotation des planetes
+        rotationFolder.add(options,"rotY_P1",-0.1,0.1).name("First Planet").listen();
+        rotationFolder.add(options,"rotY_P2",-0.1,0.1).name("Second Planet").listen(); 
+        rotationFolder.add(options,"stop"); //bouton pour stop la rotation
+        rotationFolder.add(options,"random"); //bouton pour une vitesse de rotation random
     }
 
     // fonction pour loop
     function animate() {
 
         var t =new Date().getTime()
-        requestAnimationFrame(animate);
-        firstPlanetGroup.rotation.y=t*0.0005;
-        secondGroup.rotation.y=t*0.001;
+        firstPlanetGroup.rotation.y += options.rotY_P1;
+        secondGroup.rotation.y += options.rotY_P2;
+        // firstPlanetGroup.rotation.y=t*0.0005;
+        // secondGroup.rotation.y=t*0.001;
 
 
         // Rotation du cube
@@ -212,7 +216,8 @@
 
         //pour que la camera suivent l'objet
         // camera.lookAt(cube.position.x,cube.position.y,5);
-
+        controls.update();
+        requestAnimationFrame(animate);
         renderer.render(scene, camera);
     }
 
