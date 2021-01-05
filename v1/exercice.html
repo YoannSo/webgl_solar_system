@@ -102,11 +102,14 @@
         pivotPoint = new THREE.Object3D();
         thirdPlanet.add(pivotPoint);
         
-        var asteroidGeometry = new THREE.BoxGeometry(1, 1, 1);
-        var asteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif");
-        var asteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
         for(var i = 0; i < 10; i++){  
             for(var j = 0; j < 10; j++){
+                var randomX = Math.random();
+                var randomY = Math.random();
+                var randomZ = Math.random();
+                var asteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ);
+                var asteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif");
+                var asteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
                 //to make a circle shape with the asteroids (uniformally fill a circle)
                 var a = Math.random() * 2 * Math.PI;
                 var r = asteroidMaxRadius * Math.sqrt(Math.random());
@@ -140,9 +143,9 @@
                 var x = r * Math.cos(a) ;
                 var z = r * Math.sin(a) ;
                 var envAsteroidMesh = new THREE.Mesh(envAsteroidGeometry, envAsteroidMaterial);
-                envAsteroidMesh.position.x = x;
+                envAsteroidMesh.position.x = x ;
                 envAsteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
-                envAsteroidMesh.position.z = z;
+                envAsteroidMesh.position.z = z ;
                 scene.add(envAsteroidMesh);
 
             }
