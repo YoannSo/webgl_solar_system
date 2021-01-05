@@ -7,8 +7,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Projet WebGL - L3</title>
-    <script  src="three.min.js"></script>
-    <script  src="dat.gui.min.js"></script>
+    <script src="three.min.js"></script>
+    <script src="dat.gui.min.js"></script>
     <style>
         html, body { margin: 0; padding:0; overflow: hidden; }
     </style>
@@ -18,7 +18,7 @@
 
         import { OrbitControls } from 'https://unpkg.com/three@0.121.1/examples/jsm/controls/OrbitControls.js';
 
-    let geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,sun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup, pivotPoint;//init de toutes les var
+    let geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,sun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup, pivotPoint, sunTexture,thirdPlanetTexture, thirdPlanetMaterial, secondPlanetTexture, secondPlanetMaterial, firstPlanetTexture;//init de toutes les var
 
     //colors
     var orange = 0xff8000;
@@ -43,14 +43,16 @@
         geometryBox = new THREE.BoxGeometry(3, 3, 3); //geometry du cube
         geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 ); //geomtry d'une sphere
         sun = new THREE.SphereGeometry(20,50,50);
-        sunMaterial= new THREE.TextureLoader().load('sun.jpg');
-        sunMaterial= new THREE.MeshBasicMaterial({map:sunMaterial})
+        sunTexture = new THREE.TextureLoader().load("textures/sun.jpg");
+        sunMaterial = new THREE.MeshBasicMaterial({map:sunTexture})
         sun = new THREE.Mesh(sun,sunMaterial);
         scene.add(sun);
 
         // ******** FIRST PLANET ********
-        firstPlanet=new THREE.SphereGeometry(8,50,50);
-        firstPlanet=new THREE.Mesh(firstPlanet,new THREE.MeshToonMaterial);
+        firstPlanet=new THREE.SphereGeometry(4,50,50);
+        firstPlanetTexture = new THREE.TextureLoader().load("textures/firstPlanet.png");
+        firstPlanetMaterial = new THREE.MeshBasicMaterial( {map:firstPlanetTexture} );
+        firstPlanet= new THREE.Mesh(firstPlanet, firstPlanetMaterial );
         firstPlanet.position.x=50;
         firstPlanet.rotation.x=0.5;
         firstPlanetGroup=new THREE.Group();
@@ -59,9 +61,12 @@
 
         // ******** SECOND PLANET (2 rings) ********
         secondPlanet = new THREE.SphereGeometry(8,50,50);
+        secondPlanetTexture = new THREE.TextureLoader().load("textures/jupiter.jfif");
+        secondPlanetMaterial = new THREE.MeshBasicMaterial( {map:secondPlanetTexture} );
+        secondPlanet = new THREE.Mesh(secondPlanet, secondPlanetMaterial);
+
         ring1 = new THREE.RingGeometry( 10, 11, 30);
         ring2 = new THREE.RingGeometry( 12, 13, 30);
-        secondPlanet = new THREE.Mesh(secondPlanet,new THREE.MeshToonMaterial);
         secondPlanet.position.x = -100;
         secondPlanet.rotation.x = 0.5;
 
@@ -81,15 +86,15 @@
 
         // ******** THIRD PLANET (belt of asteroids) ********
         thirdPlanet = new THREE.SphereGeometry(12,50,50);
-        thirdPlanet = new THREE.Mesh(thirdPlanet,new THREE.MeshLambertMaterial);
+        thirdPlanetTexture = new THREE.TextureLoader().load("textures/asteroidPlanet.jpg")
+        thirdPlanetMaterial = new THREE.MeshBasicMaterial( {map:thirdPlanetTexture} );
+        thirdPlanet = new THREE.Mesh(thirdPlanet, thirdPlanetMaterial);
         thirdPlanet.position.x = -200;
         thirdPlanet.rotation.x = 0.2;
 
         thirdPlanetGroup = new THREE.Group();
 
         //asteroids
-        var asteroidMin = -50;
-        var asteroidMax = 50;
         var asteroidMinHeight = -3;
         var asteroidMaxHeight = 3;
         var asteroidMaxRadius = 50;
@@ -98,7 +103,8 @@
         thirdPlanet.add(pivotPoint);
         
         var asteroidGeometry = new THREE.BoxGeometry(1, 1, 1);
-        var asteroidMaterial = new THREE.MeshToonMaterial( /*{color:orange}*/ );
+        var asteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif");
+        var asteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
         for(var i = 0; i < 10; i++){  
             for(var j = 0; j < 10; j++){
                 //to make a circle shape with the asteroids (uniformally fill a circle)
@@ -110,19 +116,61 @@
                 asteroidMesh.position.x = x;
                 asteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
                 asteroidMesh.position.z = z;
-                //this method makes a square around the planet
-                // asteroidMesh.position.x = (Math.random() * (asteroidMax - asteroidMin) + asteroidMin);
-                // asteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
-                // asteroidMesh.position.z = (Math.random() * (asteroidMax - asteroidMin) + asteroidMin);
                 pivotPoint.add(asteroidMesh); 
             }
         }
-
 
         thirdPlanetGroup.add(thirdPlanet);
         scene.add(thirdPlanetGroup);
 
 
+        // ******** ENVIRONMENT ASTEROIDS ********
+        var envAsteroidMaxRadius = 500;
+
+        for(var i = 0; i < 60; i ++){
+            for(var j = 0; j < 60; j ++){
+                var randomX = Math.random();
+                var randomY = Math.random();
+                var randomZ = Math.random();
+                var envAsteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ);
+                var envAsteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif");
+                var envAsteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
+                var a = Math.random() * 2 * Math.PI;
+                var r = envAsteroidMaxRadius * Math.sqrt(Math.random());
+                var x = r * Math.cos(a) ;
+                var z = r * Math.sin(a) ;
+                var envAsteroidMesh = new THREE.Mesh(envAsteroidGeometry, envAsteroidMaterial);
+                envAsteroidMesh.position.x = x;
+                envAsteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
+                envAsteroidMesh.position.z = z;
+                scene.add(envAsteroidMesh);
+
+            }
+        }
+
+
+
+
+        // ******** TRAJECTORIES ********
+        //fonction qui cree une trajectoire d'une planete en specifiant le rayon
+        function createTrajectory(radius) {
+            let circleGeometry = new THREE.CircleGeometry(radius, 100);
+            circleGeometry.vertices.splice(0, 1); 
+            return new THREE.LineLoop(circleGeometry, new THREE.LineBasicMaterial({ color: "gray" }));
+        }
+
+        //on rotateX la trajectoire de PI / 2 pour que elle soit a l'horizontale
+        let firstPlanetTrajectory = createTrajectory(50);
+        firstPlanetTrajectory.rotateX( Math.PI / 2 );
+        firstPlanetGroup.add(firstPlanetTrajectory);
+
+        let secondPlanetTrajectory = createTrajectory(100);
+        secondPlanetTrajectory.rotateX( Math.PI / 2 );
+        secondPlanetGroup.add(secondPlanetTrajectory);
+
+        let thirdPlanetTrajectory = createTrajectory(200);
+        thirdPlanetTrajectory.rotateX( Math.PI / 2 );
+        thirdPlanetGroup.add(thirdPlanetTrajectory);
 
 
         //********* a enlever ??? ***********
@@ -154,7 +202,7 @@
         skybox=new THREE.SphereGeometry(500,500,500);
         //skyboxMaterial=new THREE.MeshBasicMaterial({map: new THREE.TextureLoader("space.png"),side: THREE.DoubleSide});
         // mat=new THREE.MeshFaceMaterial(skyboxMaterial);
-        texture1 = new THREE.TextureLoader().load('space.png');
+        texture1 = new THREE.TextureLoader().load("textures/space.png");
         skyboxMaterial=new THREE.MeshStandardMaterial({map:texture1,side:THREE.DoubleSide});
         test=new THREE.Mesh(skybox,skyboxMaterial);
         scene.add(test);
@@ -198,6 +246,7 @@
         geometryPlane = new THREE.PlaneGeometry( 100, 100, 5 ); //on met un plan assez grand
         plane = new THREE.Mesh( geometryPlane, planeMaterial );
         // scene.add( plane );
+
 
         //creation du dat.gui
         gui = new dat.GUI({name: 'GUI'});
@@ -281,6 +330,7 @@
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        
     }
 
     window.addEventListener('resize', onWindowResize, false);
