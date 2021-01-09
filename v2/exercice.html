@@ -1,0 +1,832 @@
+<!-- Projet WebGL - L3 -->
+<!-- TAYLOR Matt / SOCHAJ Yoann / MAUREL Benjamin -->
+<!-- 04/01/2021 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Projet WebGL - L3</title>
+    <script src="three.min.js"></script>
+    <script src="dat.gui.min.js"></script>
+    <style>
+        html, body { margin: 0; padding:0; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <script type="module">
+        import * as $ from 'https://code.jquery.com/jquery-3.4.1.min.js'
+        export default window.jQuery.noConflict(true)
+        import { OrbitControls } from 'https://unpkg.com/three@0.121.1/examples/jsm/controls/OrbitControls.js';
+
+    let particleSpeed,stateParticle,posPlanets,cometGroup,canvas,sun,geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,meshSun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup, pivotPoint, sunTexture,thirdPlanetTexture, thirdPlanetMaterial, secondPlanetTexture, secondPlanetMaterial, firstPlanetTexture;//init de toutes les var
+    let comet;
+    let jupiterTexture,jupiterMesh,jupiterGroup,jupiterGeometry,jupiterMaterial,pivotJupiterEnceladus,pivotJupiterEuropa;
+        let enceladusTexture,enceladusMesh,enceladusGroup,enceladusGeometry,enceladusMaterial;
+        let europaTexture,europaMesh,europaGroup,europaGeometry,europaMaterial;
+
+        let marsGui,saturneGui,asteroPlanetoGui,sunGui,jupiterGui;
+      let rotAxeSaturneX,
+          rotAxeSaturneY,
+          rotAxeSaturneZ,
+          rotAxeAnneauSaturneX1,
+          rotAxeAnneauSaturneY1,
+          rotAxeAnneauSaturneZ1,
+          rotAxeAnneauSaturneX2,
+          rotAxeAnneauSaturneY2,
+          rotAxeAnneauSaturneZ2;
+    //colors
+    var orange = 0xff8000;
+    var yellow = 0xF7B801;
+    let white=0xffffff;
+
+    function init() {
+        // initialisation scene
+        scene = new THREE.Scene();
+        // initialisation camera
+        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera.lookAt(100,50,0);
+
+        // initialisation renderer
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+
+        // initialisation de la taille
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        canvas=renderer.domElement
+        document.body.appendChild(canvas);
+
+        // ******** SUN ********
+        geometryBox = new THREE.BoxGeometry(3, 3, 3); //geometry du cube
+        geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 ); //geomtry d'une sphere
+        sun = new THREE.SphereGeometry(20,50,50);
+        sunTexture = new THREE.TextureLoader().load("textures/sun.jpg");
+        sunMaterial = new THREE.MeshBasicMaterial({map:sunTexture})
+        meshSun = new THREE.Mesh(sun,sunMaterial);
+        scene.add(meshSun);
+
+        // ******** FIRST PLANET ********
+        firstPlanet=new THREE.SphereGeometry(4,50,50);
+        firstPlanetTexture = new THREE.TextureLoader().load("textures/firstPlanet.png");
+        firstPlanetMaterial = new THREE.MeshBasicMaterial( {map:firstPlanetTexture} );
+        firstPlanet= new THREE.Mesh(firstPlanet, firstPlanetMaterial );
+        firstPlanet.position.x=50;
+        firstPlanet.rotation.x=0.5;
+        firstPlanetGroup=new THREE.Group();
+        firstPlanetGroup.add(firstPlanet);
+        scene.add(firstPlanetGroup);
+
+        // ******** SECOND PLANET (2 rings) ********
+        secondPlanet = new THREE.SphereGeometry(8,50,50);
+        secondPlanetTexture = new THREE.TextureLoader().load("textures/saturneTexture.jpg");
+        secondPlanetMaterial = new THREE.MeshBasicMaterial( {map:secondPlanetTexture} );
+        secondPlanet = new THREE.Mesh(secondPlanet, secondPlanetMaterial);
+
+        ring1 = new THREE.RingGeometry( 10, 11, 30);
+        ring2 = new THREE.RingGeometry( 12, 13, 30);
+        secondPlanet.position.x = -100;
+        secondPlanet.rotation.x = 0.5;
+
+        ringMaterial = new THREE.MeshBasicMaterial( { color: yellow, side: THREE.DoubleSide } );
+        mesh = new THREE.Mesh( ring1, ringMaterial );
+        mesh2 = new THREE.Mesh(ring2,ringMaterial);
+        mesh2.position.x = secondPlanet.position.x;
+        mesh2.rotation.x = 0.5;
+        mesh.position.x = secondPlanet.position.x;
+        mesh.rotation.x = 0.5;
+        secondPlanetGroup = new THREE.Group();
+        secondPlanetGroup.add(mesh);
+        secondPlanetGroup.add(secondPlanet);
+        secondPlanetGroup.add(mesh2);
+        scene.add(secondPlanetGroup);
+
+        //jupiter
+        jupiterGeometry = new THREE.SphereGeometry(8,50,50);
+        jupiterTexture = new THREE.TextureLoader().load("textures/jupiter.jfif");
+        jupiterMaterial = new THREE.MeshBasicMaterial( {map:jupiterTexture} );
+        jupiterMesh = new THREE.Mesh(jupiterGeometry, jupiterMaterial);
+        jupiterMesh.position.x=140;
+        jupiterGroup = new THREE.Group();
+        jupiterGroup.add(jupiterMesh);
+        scene.add(jupiterGroup);
+
+        europaGeometry = new THREE.SphereGeometry(1,50,50);
+        europaTexture = new THREE.TextureLoader().load("textures/europaTexture.jpg");
+        europaMaterial = new THREE.MeshBasicMaterial( {map:europaTexture} );
+        europaMesh = new THREE.Mesh(europaGeometry, europaMaterial);
+
+        enceladusGeometry = new THREE.SphereGeometry(1,50,50);
+        enceladusTexture = new THREE.TextureLoader().load("textures/enceladusTexture.jpg");
+        enceladusMaterial = new THREE.MeshBasicMaterial( {map:enceladusTexture} );
+        enceladusMesh = new THREE.Mesh(enceladusGeometry, enceladusMaterial);
+
+        pivotJupiterEnceladus = new THREE.Object3D();
+        jupiterMesh.add(pivotJupiterEnceladus);
+        pivotJupiterEuropa = new THREE.Object3D();
+        jupiterMesh.add(pivotJupiterEuropa);
+
+        pivotJupiterEnceladus.add(enceladusMesh)
+        pivotJupiterEuropa.add(europaMesh)
+
+        enceladusMesh.position.x=12
+        enceladusMesh.position.y=3
+        europaMesh.position.y=15
+        europaMesh.position.x=3
+
+        posPlanets=new Array();// on doit faire un array car le problemes c'est que les groupes on comme Pos0
+        // ******** THIRD PLANET (belt of asteroids) ********
+        thirdPlanet = new THREE.SphereGeometry(12,50,50);
+        thirdPlanetTexture = new THREE.TextureLoader().load("textures/asteroidPlanet.jpg")
+        thirdPlanetMaterial = new THREE.MeshBasicMaterial( {map:thirdPlanetTexture} );
+        thirdPlanet = new THREE.Mesh(thirdPlanet, thirdPlanetMaterial);
+        thirdPlanet.position.x = -200;
+        thirdPlanet.rotation.x = 0.2;
+
+        thirdPlanetGroup = new THREE.Group();
+
+        //asteroids
+        var asteroidMinHeight = -3;
+        var asteroidMaxHeight = 3;
+        var asteroidMaxRadius = 50;
+
+        pivotPoint = new THREE.Object3D();
+        thirdPlanet.add(pivotPoint);
+        
+        for(var i = 0; i < 10; i++){  
+            for(var j = 0; j < 10; j++){
+                var randomX = Math.random();
+                var randomY = Math.random();
+                var randomZ = Math.random();
+                var asteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ);
+                var asteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif");
+                var asteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
+                //to make a circle shape with the asteroids (uniformally fill a circle)
+                var a = Math.random() * 2 * Math.PI;
+                var r = asteroidMaxRadius * Math.sqrt(Math.random());
+                var x = r * Math.cos(a) ;
+                var z = r * Math.sin(a) ;
+                var asteroidMesh = new THREE.Mesh(asteroidGeometry, asteroidMaterial);
+                asteroidMesh.position.x = x;
+                asteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
+                asteroidMesh.position.z = z;
+                pivotPoint.add(asteroidMesh); 
+            }
+        }
+
+        thirdPlanetGroup.add(thirdPlanet);
+        scene.add(thirdPlanetGroup);
+
+
+
+        // ******** ENVIRONMENT ASTEROIDS ********
+        var envAsteroidMaxRadius = 500;
+
+        for(var i = 0; i < 60; i ++){
+            for(var j = 0; j < 60; j ++){
+                var randomX = Math.random();
+                var randomY = Math.random();
+                var randomZ = Math.random();
+                var envAsteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ);
+                var envAsteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif");
+                var envAsteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
+                var a = Math.random() * 2 * Math.PI;
+                var r = envAsteroidMaxRadius * Math.sqrt(Math.random());
+                var x = r * Math.cos(a) ;
+                var z = r * Math.sin(a) ;
+                var envAsteroidMesh = new THREE.Mesh(envAsteroidGeometry, envAsteroidMaterial);
+                envAsteroidMesh.position.x = x ;
+                envAsteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
+                envAsteroidMesh.position.z = z ;
+                scene.add(envAsteroidMesh);
+
+            }
+        }
+    cometGroup=[];
+    for(let i=0;i<100;i++) {
+        let rand = Math.random();
+        let cometGeo = new THREE.IcosahedronGeometry(1);
+        let materialComet = new THREE.MeshBasicMaterial({color: white});
+        let meshGeo = new THREE.Mesh(cometGeo, materialComet);
+        scene.add(meshGeo);
+        cometGroup.push(meshGeo);
+       // meshGeo.setRotate.x=Math.random();
+        meshGeo.position.x = Math.random() * (400 + 400) - 600;
+        meshGeo.position.z = Math.random() * (600 + 400) - 400;
+        if (i < 100 / 2) {
+            meshGeo.position.y = Math.random() * (-50 - 50) - 50;
+        } else {
+            meshGeo.position.y = Math.random() * (50 + 50) + 50;
+        }
+
+        //cometGroup[i];
+    }
+
+        //let lightComet=new THREE.PointLight(white,2)
+
+       // meshGeo.add(lightComet);
+
+
+
+
+        // ******** TRAJECTORIES ********
+        //fonction qui cree une trajectoire d'une planete en specifiant le rayon
+        function createTrajectory(radius) {
+            let circleGeometry = new THREE.CircleGeometry(radius, 100);
+            circleGeometry.vertices.splice(0, 1); 
+            return new THREE.LineLoop(circleGeometry, new THREE.LineBasicMaterial({ color: "gray" }));
+        }
+
+        //on rotateX la trajectoire de PI / 2 pour que elle soit a l'horizontale
+        console.log(jupiterMesh)
+        let firstPlanetTrajectory = createTrajectory(firstPlanet.position.x);
+        firstPlanetTrajectory.rotateX( Math.PI / 2 );
+        firstPlanetGroup.add(firstPlanetTrajectory);
+
+        let jupiterTrajectory=createTrajectory(jupiterMesh.position.x)
+        jupiterTrajectory.rotateX(Math.PI / 2)
+        jupiterGroup.add(jupiterTrajectory)
+
+        let secondPlanetTrajectory = createTrajectory(secondPlanet.position.x);
+        secondPlanetTrajectory.rotateX( Math.PI / 2 );
+        secondPlanetGroup.add(secondPlanetTrajectory);
+
+        let thirdPlanetTrajectory = createTrajectory(thirdPlanet.position.x);
+        thirdPlanetTrajectory.rotateX( Math.PI / 2 );
+        thirdPlanetGroup.add(thirdPlanetTrajectory);
+
+
+        //********* a enlever ??? ***********
+
+        //creation de notre materiel pour les objets
+        // material = new THREE.MeshStandardMaterial()
+
+        // // ajout de texture pour le fun
+        // // texture = new THREE.TextureLoader().load('texture.jpg');
+        // // planeMaterial=new THREE.MeshStandardMaterial({map:texture});
+
+        // // On crée un cube a l'aide de notre geometry box et notre material
+        // cube = new THREE.Mesh(geometryBox, material);
+
+        // // changer la position du cube et l'ajouter a la scene
+        // cube.position.z=5;
+        // scene.add(cube);
+
+        // alpha=0; //variable qui vont nous permettre la trajectoire circulaire
+        // alpha2=0;
+        // alpha3=0;
+        // *************************************
+
+        
+
+
+
+        // ******** SPACE BACKGROUND ********
+        skybox=new THREE.SphereGeometry(500,500,500);
+        //skyboxMaterial=new THREE.MeshBasicMaterial({map: new THREE.TextureLoader("space.png"),side: THREE.DoubleSide});
+        // mat=new THREE.MeshFaceMaterial(skyboxMaterial);
+        texture1 = new THREE.TextureLoader().load("textures/space.png");
+        skyboxMaterial=new THREE.MeshStandardMaterial({map:texture1,side:THREE.DoubleSide});
+        test=new THREE.Mesh(skybox,skyboxMaterial);
+        scene.add(test);
+
+
+        // Position camera
+        camera.position.y =0; //changement position de la camera pour bien le voir la scene
+        camera.position.x=100;
+        camera.position.z=100;
+
+        controls = new OrbitControls( camera , renderer.domElement );//controle de camera
+        controls.maxDistance = 450; //you can't escape space ! (limit max de-zoom)
+
+
+        //********* a enlever ??? ***********
+        // creation des deux sphere +position
+
+        // sphere=new THREE.Mesh(geometrySphere,material);
+        // sphere2=new THREE.Mesh(geometrySphere,material);
+        // //on initialise la position des sphere au depart
+        // sphere.position.z=5;
+        // sphere.position.x=8;
+        // sphere2.position.z=5;
+        // sphere2.position.x=-8;
+        // scene.add(sphere);
+        // scene.add(sphere2);
+        // **********************************
+
+        axesHelper = new THREE.AxesHelper( 50 );
+        scene.add( axesHelper );
+
+        //creation des deux lumieres ajouter au sphere
+
+        //light = new THREE.AmbientLight( 0xffffff, 0.6 ); //on met l'intensite a 0.6 pour eviter qu elle soit trop grande
+        light2 = new THREE.PointLight( 0xffffff, 1 );
+
+        //sphere.add(light);
+        meshSun.add(light2);
+
+        //creation du plan + ajout de texture au plan
+        geometryPlane = new THREE.PlaneGeometry( 100, 100, 5 ); //on met un plan assez grand
+        plane = new THREE.Mesh( geometryPlane, planeMaterial );
+        // scene.add( plane );
+
+
+        window.addEventListener('click',onDocumentMouseDown,false);
+
+        //creation du dat.gui
+        marsGui = new dat.GUI({name: 'MARS'});
+        saturneGui = new dat.GUI({name: 'SATURNE'});
+        jupiterGui=new dat.GUI({name:"JUPITER"})
+        asteroPlanetoGui = new dat.GUI({name: 'ASTEROPLANETO'});
+        sunGui=new dat.GUI({name:'SUN'})
+        var max = 1
+        var min = -1
+        options={  //var qui va nous permettre de setup une rotX et rotY et pour pouvoir aussi l'arreter
+        rotY_1PG:0.001,
+        rotY_2PG:0.002,
+        rotY_3PG:0.0007,
+            rotY_4PG:0.0007,
+            rotAxeSaturneX:0.01,
+            rotAxeSaturneY:0.01,
+            rotAxeSaturneZ:0.01,
+            rotAxeAnneauSaturneX1:0.01,
+            rotAxeAnneauSaturneY1:0.01,
+            rotAxeAnneauSaturneZ1:0.01,
+            rotAxeAnneauSaturneX2:0.01,
+            rotAxeAnneauSaturneY2:0.01,
+            rotAxeAnneauSaturneZ2:0.01,
+            rotAxeMarsX:0.01,
+            rotAxeMarsY:0.01,
+            rotAxeMarsZ:0.01,
+            rotAxeAsteroPlanetoX:0.01,
+            rotAxeAsteroPlanetoY:0.01,
+            rotAxeAsteroPlanetoZ:0.01,
+            rotAxeJupiterX:0.01,
+            rotAxeJupiterY:0.01,
+            rotAxeJupiterZ:0.01,
+            rotYEnceladus:0.01,
+            rotYEuropa:0.01,
+            particleSpeed:0.01,
+            stateParticle:"x",
+
+        stopALL:function (){
+            this.rotY_1PG = 0;
+            this.rotY_2PG = 0;
+            this.rotY_3PG = 0;
+            t
+        },
+        randomALL:function(){
+            this.rotY_1PG = (Math.random() * (max - min) + min)/10;
+            this.rotY_2PG = (Math.random() * (max - min) + min)/10;
+            this.rotY_3PG = (Math.random() * (max - min) + min)/10;
+        },
+            stopAsteroPlaneto:function (){
+                this.rotY_3PG = 0;
+            },
+            stopSaturne:function (){
+                this.rotY_2PG = 0;
+            },
+            stopMars:function (){
+                this.rotY_1PG = 0;
+            },
+            stopJupiter:function (){
+                this.rotY_4PG = 0;
+            },
+            stopEnceladus:function (){
+                this.rotYEnceladus=0
+            },
+            stopEuropa:function (){
+                this.rotYEuropa=0
+            },
+            randomJupiter:function (){
+                this.rotY_4PG = (Math.random() * (max - min) + min)/10;
+            },
+            randomEnceladus:function (){
+                this.rotYEnceladus=(Math.random() * (max - min) + min)/10
+            },
+            randomEuropa:function (){
+                this.rotYEuropa=(Math.random() * (max - min) + min)/10
+            },
+            stopRotSaturne:function (){
+                this.rotAxeSaturneX=0
+                    this.rotAxeSaturneY=0
+                    this.rotAxeSaturneZ=0
+                    this.rotAxeAnneauSaturneX1=0
+                    this.rotAxeAnneauSaturneY1=0
+                    this.rotAxeAnneauSaturneZ1=0
+                    this.rotAxeAnneauSaturneX2=0
+                    this.rotAxeAnneauSaturneY2=0
+                    this.rotAxeAnneauSaturneZ2=0
+            },
+            randomRotSaturne:function (){
+                this.rotAxeSaturneX=(Math.random() * (max - min) + min)/10
+                this.rotAxeSaturneY=(Math.random() * (max - min) + min)/10
+                this.rotAxeSaturneZ=(Math.random() * (max - min) + min)/10
+                this.rotAxeAnneauSaturneX1=(Math.random() * (max - min) + min)/10
+                this.rotAxeAnneauSaturneY1=(Math.random() * (max - min) + min)/10
+                this.rotAxeAnneauSaturneZ1=(Math.random() * (max - min) + min)/10
+                this.rotAxeAnneauSaturneX2=(Math.random() * (max - min) + min)/10
+                this.rotAxeAnneauSaturneY2=(Math.random() * (max - min) + min)/10
+                this.rotAxeAnneauSaturneZ2=(Math.random() * (max - min) + min)/10
+            },
+            stopRotMars:function (){
+                this.rotAxeMarsX=0
+                this.rotAxeMarsY=0
+                this.rotAxeMarsZ=0
+            },
+            randomRotMars:function (){
+                this.rotAxeMarsX=(Math.random() * (max - min) + min)/10
+                this.rotAxeMarsY=(Math.random() * (max - min) + min)/10
+                this.rotAxeMarsZ=(Math.random() * (max - min) + min)/10
+
+            },
+            stopRotJupiter:function (){
+                this.rotAxeJupiterX=0
+                this.rotAxeJupiterY=0
+                this.rotAxeJupiterZ=0
+            },
+            randomRotJupiter:function (){
+                this.rotAxeJupiterX=(Math.random() * (max - min) + min)/10
+                this.rotAxeJupiterY=(Math.random() * (max - min) + min)/10
+                this.rotAxeJupiterZ=(Math.random() * (max - min) + min)/10
+
+            },
+            stopRotAsteroPlaneto:function (){
+                this.rotAxeAsteroPlanetoX=0
+                this.rotAxeAsteroPlanetoY=0
+                this.rotAxeAsteroPlanetoZ=0
+            },
+            randomRotAsteroPlaneto:function (){
+                this.rotAxeAsteroPlanetoX=(Math.random() * (max - min) + min)/10
+                this.rotAxeAsteroPlanetoY=(Math.random() * (max - min) + min)/10
+                this.rotAxeAsteroPlanetoZ=(Math.random() * (max - min) + min)/10
+
+            },
+
+            randomAsteroPlaneto:function (){
+                this.rotY_3PG = (Math.random() * (max - min) + min)/10;
+            },
+            randomSaturne:function (){
+                this.rotY_2PG = (Math.random() * (max - min) + min)/10;
+            },
+            randomMars:function (){
+                this.rotY_1PG = (Math.random() * (max - min) + min)/10;
+            },
+            changerAxeParticle:function (){
+
+                if(options.stateParticle=="x")
+                    this.stateParticle="y"
+                else
+                    this.stateParticle="x"
+            },
+
+
+    };
+        options.stopRotJupiter()
+        //on cree un folder pour la rotation
+        let marsDeplacementFolder = marsGui.addFolder("Mars")
+        setupCommonGui(marsDeplacementFolder,"Mars")
+        let marsRotFolder=marsGui.addFolder("Rotation")
+        setupRotFolder(marsRotFolder,"Mars")
+
+        let saturnDeplacementFolder = saturneGui.addFolder("Saturne");
+        setupCommonGui(saturnDeplacementFolder,"Saturne")
+        let saturnRotFolder=saturneGui.addFolder("Rotation")
+        setupRotFolder(saturnRotFolder,"Saturne")
+
+        let jupiterDeplacementFolder=jupiterGui.addFolder("Jupiter")
+        setupCommonGui(jupiterDeplacementFolder,"Jupiter")
+        let jupiterRotFolder=jupiterGui.addFolder("Rotation")
+        setupRotFolder(jupiterRotFolder,"Jupiter")
+        let moonFolder=jupiterGui.addFolder("Lunes")
+        moonFolder.add(options,"rotYEnceladus",-0.1,0.1).name("Enceladus Speed").listen()
+        moonFolder.add(options,"rotYEuropa",-0.1,0.1).name("Europa Speed").listen()
+        moonFolder.add(options,"randomEnceladus")
+        moonFolder.add(options,"randomEuropa")
+        moonFolder.add(options,"stopEnceladus")
+        moonFolder.add(options,"stopEuropa")
+
+
+        let asteroPlanetoDeplacementFolder = asteroPlanetoGui.addFolder("AsteroPlaneto");
+        setupCommonGui(asteroPlanetoDeplacementFolder,"AsteroPlaneto")
+        let asteroPlanetoRotFolder=asteroPlanetoGui.addFolder("Rotation")
+        setupRotFolder(asteroPlanetoRotFolder,"AsteroPlaneto")
+
+        let sunDeplacementMarsFolder=sunGui.addFolder("Mars")
+        setupCommonGui(sunDeplacementMarsFolder,"Mars")
+        let sunRotMarsFolder=sunDeplacementMarsFolder.addFolder("Rotation")
+        setupRotFolder(sunRotMarsFolder,"Mars")
+
+
+        let sunDeplacementSaturneFolder=sunGui.addFolder("Saturne")
+        setupCommonGui(sunDeplacementSaturneFolder,"Saturne")
+        let sunRotSaturneFolder=sunDeplacementSaturneFolder.addFolder("Rotation")
+        setupRotFolder(sunRotSaturneFolder,"Saturne")
+
+        let sunDeplacementAsteroPlanetoFolder=sunGui.addFolder("AsteroPlaneto")
+        setupCommonGui(sunDeplacementAsteroPlanetoFolder,"AsteroPlaneto")
+        let sunRotAsteroPlanetoFolder=sunDeplacementAsteroPlanetoFolder.addFolder("Rotation")
+        setupRotFolder(sunRotAsteroPlanetoFolder,"AsteroPlaneto")
+
+        let sunOtherFolder=sunGui.addFolder("Other")
+        setupCommonGui(sunOtherFolder,"Sun");
+        //options.stateParticle="x"
+        //setupCommonGui(asteroPlanetoRotationFolder)
+       /* marsGui.addFolder(rotationFolder)
+        saturneGui.addFolder(rotationFolder)
+        asteroPlanetoGui.addFolder(rotationFolder)*/
+
+        //sun.closed=true;
+        //guiSun.constructor.toggleHide()
+        /*planetLookAt.add(options,"Saturne").listen();
+        planetLookAt.add(options,"Mars").listen();
+        planetLookAt.add(options,"JeSaisPas").listen();
+        planetLookAt.add(options,"Sun").listen();*/
+        marsGui.domElement.hidden=true;
+        saturneGui.domElement.hidden=true;
+        asteroPlanetoGui.domElement.hidden=true;
+        jupiterGui.domElement.hidden=true;
+
+
+    }
+    function setupCommonGui(folder,nom){
+        if(nom=="Mars") {
+            folder.add(options,"rotY_1PG",-0.1,0.1).name("Mars Speed").listen()
+            folder.add(options, "stopMars"); //bouton pour stop la rotation
+            folder.add(options, "randomMars"); //bouton pour une vitesse de rotation random
+        }
+        else if(nom=="Saturne"){
+            folder.add(options,"rotY_2PG",-0.1,0.1).name("Saturne Speed").listen()
+            folder.add(options, "stopSaturne"); //bouton pour stop la rotation
+            folder.add(options, "randomSaturne"); //bouton pour une vitesse de rotation random
+        }
+        else if(nom=="AsteroPlaneto"){
+            folder.add(options,"rotY_3PG",-0.1,0.1).name("Astero Speed").listen()
+            folder.add(options, "stopAsteroPlaneto"); //bouton pour stop la rotation
+            folder.add(options, "randomAsteroPlaneto"); //bouton pour une vitesse de rotation random
+        }
+        else if(nom=="Jupiter"){
+            folder.add(options,"rotY_4PG",-0.1,0.1).name("Jupiter Speed").listen()
+            folder.add(options, "stopJupiter"); //bouton pour stop la rotation
+            folder.add(options, "randomJupiter"); //bouton pour une vitesse de rotation random
+        }
+        else{
+            folder.add(options,"particleSpeed",-1.0,1.0).name("Vitesse particules").listen()
+            folder.add(options,"changerAxeParticle")
+
+        }
+    }
+    function setupRotFolder(folder,nom){
+        if(nom=="Mars") {
+            folder.add(options,"rotAxeMarsX",-0.1,0.1).name("Mars RotX").listen()
+            folder.add(options,"rotAxeMarsY",-0.1,0.1).name("Mars RotY").listen()
+            folder.add(options,"rotAxeMarsZ",-0.1,0.1).name("Mars RotZ").listen()
+            folder.add(options,"stopRotMars")
+            folder.add(options,"randomRotMars")
+        }
+        else if(nom=="Saturne"){
+            folder.add(options,"rotAxeSaturneX",-0.1,0.1).name("Saturne RotX").listen()
+            folder.add(options,"rotAxeSaturneY",-0.1,0.1).name("Saturne RotY").listen()
+            folder.add(options,"rotAxeSaturneZ",-0.1,0.1).name("Saturne RotZ").listen()
+            folder.add(options,"rotAxeAnneauSaturneX1",-0.1,0.1).name("Anneau 1 rotX").listen()
+            folder.add(options,"rotAxeAnneauSaturneY1",-0.1,0.1).name("Anneau 1 rotY").listen()
+            folder.add(options,"rotAxeAnneauSaturneZ1",-0.1,0.1).name("Anneau 1 rotZ").listen()
+            folder.add(options,"rotAxeAnneauSaturneX2",-0.1,0.1).name("Anneau 2 rotX").listen()
+            folder.add(options,"rotAxeAnneauSaturneY2",-0.1,0.1).name("Anneau 2 rotY").listen()
+            folder.add(options,"rotAxeAnneauSaturneZ2",-0.1,0.1).name("Anneau 2 rotZ").listen()
+            folder.add(options,"stopRotSaturne")
+            folder.add(options,"randomRotSaturne")
+
+
+        }
+        else if(nom=="AsteroPlaneto"){
+            folder.add(options,"rotAxeAsteroPlanetoX",-0.1,0.1).name("AsteroPlaneto RotX").listen()
+            folder.add(options,"rotAxeAsteroPlanetoY",-0.1,0.1).name("AsteroPlaneto RotY").listen()
+            folder.add(options,"rotAxeAsteroPlanetoZ",-0.1,0.1).name("AsteroPlaneto RotZ").listen()
+            folder.add(options,"stopRotAsteroPlaneto")
+            folder.add(options,"randomRotAsteroPlaneto")
+        }
+        else if(nom=="Jupiter"){
+            folder.add(options,"rotAxeJupiterX",-0.1,0.1).name("Jupiter RotX").listen()
+            folder.add(options,"rotAxeJupiterY",-0.1,0.1).name("Jupiter RotY").listen()
+            folder.add(options,"rotAxeJupiterZ",-0.1,0.1).name("Jupiter RotZ").listen()
+            folder.add(options,"stopRotJupiter")
+            folder.add(options,"randomRotJupiter")
+
+        }
+    }
+
+        function mdrlol(mouse){
+        //console.log(mouse)
+           // console.log(meshSun.position)
+            let boundingBox = new THREE.Box3().setFromObject(meshSun)
+            let size = boundingBox.getSize() // Returns Vector3
+
+            if(boundingBox.containsPoint(mouse.point)) {
+
+                marsGui.domElement.hidden=true;
+                saturneGui.domElement.hidden=true;
+                asteroPlanetoGui.domElement.hidden=true;
+                sunGui.domElement.hidden=false
+                jupiterGui.domElement.hidden=true;
+                return;
+
+
+            }
+             boundingBox = new THREE.Box3().setFromObject(firstPlanetGroup.children[0])
+                    if(boundingBox.containsPoint(mouse.point)){
+                        marsGui.domElement.hidden=false;
+                        saturneGui.domElement.hidden=true;
+                        asteroPlanetoGui.domElement.hidden=true;
+                        sunGui.domElement.hidden=true
+                        jupiterGui.domElement.hidden=true;
+
+                        camera.lookAt(firstPlanetGroup.children[0].position)
+                        return ;
+
+            }
+
+            boundingBox = new THREE.Box3().setFromObject(secondPlanetGroup.children[0])
+            size = boundingBox.getSize() // Returns Vector3
+            //console.log(size)
+
+
+                    if(boundingBox.containsPoint(mouse.point)) {
+                        marsGui.domElement.hidden=true;
+                        saturneGui.domElement.hidden=false;
+                        asteroPlanetoGui.domElement.hidden=true;
+                        sunGui.domElement.hidden=true
+                        jupiterGui.domElement.hidden=true;
+
+                        return;
+                    }
+
+            boundingBox = new THREE.Box3().setFromObject(thirdPlanetGroup.children[0])
+
+            size = boundingBox.getSize() // Returns Vector3
+            //console.log(size)
+
+
+            if(boundingBox.containsPoint(mouse.point)) {
+                marsGui.domElement.hidden=true;
+                saturneGui.domElement.hidden=true;
+                asteroPlanetoGui.domElement.hidden=false;
+                sunGui.domElement.hidden=true
+                jupiterGui.domElement.hidden=true;
+
+                return;
+            }
+            boundingBox = new THREE.Box3().setFromObject(jupiterGroup.children[0])
+            size = boundingBox.getSize() // Returns Vector3
+            //console.log(size)
+            if(boundingBox.containsPoint(mouse.point)) {
+                marsGui.domElement.hidden=true;
+                saturneGui.domElement.hidden=true;
+                asteroPlanetoGui.domElement.hidden=true;
+                sunGui.domElement.hidden=true
+                jupiterGui.domElement.hidden=false;
+
+                return;
+            }
+        }
+    function onDocumentMouseDown(event){
+        //console.log("test")
+        let mouse=new THREE.Vector3();
+        let rayCaster = new THREE.Raycaster();
+        event.preventDefault();
+        //camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+        //let rect = this.renderer.domElement.getBoundingClientRect();
+        var rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        rayCaster.setFromCamera(mouse, camera);
+       // console.log(mouse)
+        let intersects=new Array();
+        let temp= new Array()
+
+        temp.push(firstPlanetGroup.children)
+        temp.push(secondPlanetGroup.children)
+        temp.push(scene.children)//scene .push en dernier sinon il va d'abord detecter sky box et apres les autres groups
+
+        for(let i=0;i<3;i++)
+        intersects=intersects.concat(rayCaster.intersectObjects(temp[i], false));
+        mdrlol(intersects[0])
+
+
+
+
+
+    }
+
+    // fonction pour loop
+    function animate() {
+
+        for(let i=0;i<cometGroup.length;i++) {
+            if (options.stateParticle == "x") {
+                if (cometGroup[i].position.x > 550) {
+                    cometGroup[i].position.x = -500;
+                } else if (cometGroup[i].position.x < -550) {
+                    cometGroup[i].position.x = 500;
+                } else {
+                    cometGroup[i].position.x += options.particleSpeed
+                }
+            }
+            else{
+
+                if (cometGroup[i].position.z > 550) {
+                    cometGroup[i].position.z = -500;
+                } else if (cometGroup[i].position.z < -550) {
+                    cometGroup[i].position.z = 500;
+                } else {
+                    cometGroup[i].position.z += options.particleSpeed
+                }
+            }
+        }
+        var t = new Date().getTime()
+
+
+        secondPlanetGroup.children[2].rotation.x+=options.rotAxeAnneauSaturneX1
+        secondPlanetGroup.children[2].rotation.y+=options.rotAxeAnneauSaturneY1
+        secondPlanetGroup.children[2].rotation.z+=options.rotAxeAnneauSaturneZ1
+        secondPlanetGroup.children[0].rotation.x+=options.rotAxeAnneauSaturneX2
+        secondPlanetGroup.children[0].rotation.y+=options.rotAxeAnneauSaturneY2
+        secondPlanetGroup.children[0].rotation.z+=options.rotAxeAnneauSaturneZ2
+        secondPlanetGroup.children[1].rotation.x+=options.rotAxeSaturneX
+        secondPlanetGroup.children[1].rotation.y+=options.rotAxeSaturneY
+        secondPlanetGroup.children[1].rotation.z+=options.rotAxeSaturneZ
+
+        firstPlanetGroup.children[0].rotation.x+=options.rotAxeMarsX
+        firstPlanetGroup.children[0].rotation.y+=options.rotAxeMarsY
+        firstPlanetGroup.children[0].rotation.z+=options.rotAxeMarsZ
+
+        thirdPlanetGroup.children[0].rotation.x+=options.rotAxeAsteroPlanetoX
+        thirdPlanetGroup.children[0].rotation.y+=options.rotAxeAsteroPlanetoY
+        thirdPlanetGroup.children[0].rotation.z+=options.rotAxeAsteroPlanetoZ
+
+        jupiterGroup.children[0].rotation.x+=options.rotAxeJupiterX
+        jupiterGroup.children[0].rotation.y+=options.rotAxeJupiterY
+        jupiterGroup.children[0].rotation.z+=options.rotAxeJupiterZ
+
+        pivotJupiterEnceladus.rotation.y+=options.rotYEnceladus
+        pivotJupiterEuropa.rotation.x+=options.rotYEuropa
+        pivotJupiterEuropa.rotation.y+=options.rotYEuropa
+
+        firstPlanetGroup.rotation.y += options.rotY_1PG;
+        secondPlanetGroup.rotation.y += options.rotY_2PG;
+        thirdPlanetGroup.rotation.y += options.rotY_3PG;
+        jupiterGroup.rotation.y+=options.rotY_4PG
+        //jupiterGroup.rotation.y+=0.01
+
+        pivotPoint.rotation.y = t / 3000;
+
+
+        //donne au var une valeur entre -1 et 1
+        /*posX=Math.cos(alpha);
+        posY=Math.sin(alpha);
+        posY2=Math.cos(alpha2);
+        posX2=Math.sin(alpha2);
+        posY3=Math.cos(alpha3);
+        posX3=Math.sin(alpha3);*/
+
+        //on incremente alpha ce qui va nous permettre d'avoir une autre valeur pour sin et cos
+        /* alpha+=0.005;
+        alpha2+=0.01;
+        alpha3+=0.005;*/
+
+        //on augmente la valeur obtenue pour avoir un cercle plus grand
+        /* posX*=6; //cette valeur vaut 6 et l'autre vaut 10 pour eviter que les boules soit sur le meme axe circulaire
+        posY*=6;
+        posX2*=10;
+        posY2*=10;
+        posX3*=15;
+        posY3*=15;*/
+
+        //on donne ensuite au sphere la position
+        /*sphere.position.x=posX+cube.position.x;
+        sphere.position.y=posY+cube.position.y;
+        sphere2.position.x=posX2+cube.position.x;
+        sphere2.position.y=posY2+cube.position.y;
+        cube.position.x=posX3;
+        cube.position.y=posY3;*/
+
+        //pour que la camera suivent l'objet
+        // camera.lookAt(cube.position.x,cube.position.y,5);
+        controls.update();
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    }
+
+    function onWindowResize() { //pour la size de la fenetre
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        
+    }
+
+    window.addEventListener('resize', onWindowResize, false);
+
+
+    init();
+    animate();
+
+</script>
+</body>
+</html>
