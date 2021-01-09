@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="38a6a824-a6bd-4f26-8722-d2d387da4584" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="ProjectId" id="1mk3ewHk9MIzoXsQjgoiTSEdsh2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\xamp\htdocs\v2WebGl\v1" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="38a6a824-a6bd-4f26-8722-d2d387da4584" name="Default Changelist" comment="" />
+      <created>1610023860779</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1610023860779</updated>
+      <workItem from="1610023861864" duration="9532000" />
+      <workItem from="1610058810230" duration="7198000" />
+      <workItem from="1610092460995" duration="28339000" />
+      <workItem from="1610191095997" duration="1056000" />
+      <workItem from="1610192160985" duration="29919000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1028" y="573" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1610198486132">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1028" y="573" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1610198486132" />
+    <state x="685" y="334" key="run.anything.popup" timestamp="1610211792742">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="685" y="334" key="run.anything.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1610211792742" />
+    <state x="1385" y="319" width="672" height="678" key="search.everywhere.popup" timestamp="1610103537267">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1385" y="319" width="672" height="678" key="search.everywhere.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1610103537267" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/exercice.html</url>
+          <line>286</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
