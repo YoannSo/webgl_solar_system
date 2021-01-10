@@ -283,14 +283,14 @@
         thirdPlanetGroup = new THREE.Group();
 
         //asteroids
-        var asteroidMinHeight = -3;
+        var asteroidMinHeight = -3; //ces variables permettent de limiter les positions des asteroides
         var asteroidMaxHeight = 3;
         var asteroidMaxRadius = 50;
 
-        pivotPoint = new THREE.Object3D();
+        pivotPoint = new THREE.Object3D(); //on cree un point de pivot pour faciliter la suite
         thirdPlanet.add(pivotPoint);
         
-        for(var i = 0; i < 20; i++){  
+        for(var i = 0; i < 20; i++){  //on cree une boucle pour creer pleins d'asteroides qui vont constituer la ceinture
             for(var j = 0; j < 20; j++){
                 var randomX = Math.random();
                 var randomY = Math.random();
@@ -311,7 +311,7 @@
             }
         }
 
-        thirdPlanetGroup.add(thirdPlanet);
+        thirdPlanetGroup.add(thirdPlanet); //on ajoute notre planete a notre groupe
         scene.add(thirdPlanetGroup);
 
         //meteorite shader 3d
@@ -408,17 +408,17 @@
         val=0
 
         // ******** ENVIRONMENT ASTEROIDS ********
-        var envAsteroidMaxRadius = 500;
+        var envAsteroidMaxRadius = 500; //variables qui controllent les positions des asteroides dans l'environnement
         var envAsteroidMinHeight = -10;
         var envAsteroidMaxHeight = 10;
 
-        for(var i = 0; i < 60; i ++){
+        for(var i = 0; i < 60; i ++){ //on utilise une boucle for pour creer pleins d'asteroides
             for(var j = 0; j < 60; j ++){
-                var randomX = Math.random();
+                var randomX = Math.random(); //ils auront tous une taille differente
                 var randomY = Math.random();
                 var randomZ = Math.random();
                 var envAsteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ);
-                var envAsteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif");
+                var envAsteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif"); //on leur applique la bonne texture
                 var envAsteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
                 var a = Math.random() * 2 * Math.PI;
                 var r = envAsteroidMaxRadius * Math.sqrt(Math.random());
@@ -426,7 +426,7 @@
                 var z = r * Math.sin(a) ;
                 var envAsteroidMesh = new THREE.Mesh(envAsteroidGeometry, envAsteroidMaterial);
                 envAsteroidMesh.position.x = x ;
-                envAsteroidMesh.position.y = (Math.random() * (envAsteroidMaxHeight - envAsteroidMinHeight) + envAsteroidMinHeight);
+                envAsteroidMesh.position.y = (Math.random() * (envAsteroidMaxHeight - envAsteroidMinHeight) + envAsteroidMinHeight); //on se sert des variables plus haut pour determiner leur positions dans l'espace
                 envAsteroidMesh.position.z = z ;
                 scene.add(envAsteroidMesh);
 
