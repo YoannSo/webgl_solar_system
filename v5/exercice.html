@@ -474,7 +474,7 @@
 
         skybox=new THREE.SphereGeometry(500,500,500);//creation d'une sphere enorme qui va nous servir de skybox
         skyboxTexture = new THREE.TextureLoader().load("textures/space.png");//on init une texture
-        skyboxMaterial=new THREE.MeshPhongMaterial({map:skyboxTexture,side:THREE.DoubleSide});//on init un material et on le DOUBLESIDE pour qu'on puisse voir la texture a l'interieur
+        skyboxMaterial=new THREE.MeshBasicMaterial({map:skyboxTexture,side:THREE.DoubleSide});//on init un material et on le DOUBLESIDE pour qu'on puisse voir la texture a l'interieur
         skyboxMesh=new THREE.Mesh(skybox,skyboxMaterial); //creation du mesh
         scene.add(skyboxMesh); // on l'ajoute a la scene
 
@@ -551,9 +551,9 @@
         addTextAstero("astero planeto", 15, 5);
 
         // Position camera
-        camera.position.y =0; //changement position de la camera pour bien le voir la scene
-        camera.position.x=100;
-        camera.position.z=100;
+        camera.position.y =100; //changement position de la camera pour bien le voir la scene
+        camera.position.x=200;
+        camera.position.z=200;
 
         controls = new OrbitControls( camera , renderer.domElement );//controle de camera
         controls.maxDistance = 450; //you can't escape space ! (limit max de-zoom)
