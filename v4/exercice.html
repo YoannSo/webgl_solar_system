@@ -219,6 +219,7 @@ precision highp float;
         europaMesh.position.x=3
 
         posPlanets=new Array();// on doit faire un array car le problemes c'est que les groupes on comme Pos0
+
         // ******** THIRD PLANET (belt of asteroids) ********
         thirdPlanet = new THREE.SphereGeometry(12,50,50);
         thirdPlanetTexture = new THREE.TextureLoader().load("textures/asteroidPlanet.jpg")
@@ -237,8 +238,8 @@ precision highp float;
         pivotPoint = new THREE.Object3D();
         thirdPlanet.add(pivotPoint);
         
-        for(var i = 0; i < 10; i++){  
-            for(var j = 0; j < 10; j++){
+        for(var i = 0; i < 20; i++){  
+            for(var j = 0; j < 20; j++){
                 var randomX = Math.random();
                 var randomY = Math.random();
                 var randomZ = Math.random();
@@ -339,6 +340,8 @@ precision highp float;
 
         // ******** ENVIRONMENT ASTEROIDS ********
         var envAsteroidMaxRadius = 500;
+        var envAsteroidMinHeight = -10;
+        var envAsteroidMaxHeight = 10;
 
         for(var i = 0; i < 60; i ++){
             for(var j = 0; j < 60; j ++){
@@ -354,7 +357,7 @@ precision highp float;
                 var z = r * Math.sin(a) ;
                 var envAsteroidMesh = new THREE.Mesh(envAsteroidGeometry, envAsteroidMaterial);
                 envAsteroidMesh.position.x = x ;
-                envAsteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
+                envAsteroidMesh.position.y = (Math.random() * (envAsteroidMaxHeight - envAsteroidMinHeight) + envAsteroidMinHeight);
                 envAsteroidMesh.position.z = z ;
                 scene.add(envAsteroidMesh);
 
@@ -450,6 +453,89 @@ precision highp float;
         scene.add(test);
 
 
+        // ******** TEXT ABOVE PLANETS ********
+        var loader = new THREE.FontLoader();
+
+        function addTextSun(text, posY, size){
+            loader.load( 'font/myFont.json', function ( font ) {
+              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
+              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
+              var mesh = new THREE.Mesh( textGeometry, textMaterial );
+              var xOffset = -12;
+              mesh.position.y = posY;
+              mesh.position.x = meshSun.position.x + xOffset;
+              scene.add(mesh);
+          });  
+        }
+
+        function addTextMars(text, posY, size){
+            loader.load( 'font/myFont.json', function ( font ) {
+              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
+              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
+              var mesh = new THREE.Mesh( textGeometry, textMaterial );
+              var xOffset = -7;
+              mesh.position.y = posY;
+              mesh.position.x = firstPlanet.position.x + xOffset;
+              firstPlanetGroup.add(mesh)
+          });  
+        }
+
+        function addTextEarth(text, posY, size){
+            loader.load( 'font/myFont.json', function ( font ) {
+              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
+              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
+              var mesh = new THREE.Mesh( textGeometry, textMaterial );
+              var xOffset = -7;
+              mesh.position.y = posY;
+              mesh.position.x = firstPlanet.position.x + xOffset;
+              earthGroupe.add(mesh)
+          });  
+        }
+
+        function addTextSaturn(text, posY, size){
+            loader.load( 'font/myFont.json', function ( font ) {
+              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
+              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
+              var mesh = new THREE.Mesh( textGeometry, textMaterial );
+              var xOffset = -10;
+              mesh.position.y = posY;
+              mesh.position.x = secondPlanet.position.x + xOffset;
+              secondPlanetGroup.add(mesh)
+          });  
+        }
+
+        function addTextAstero(text, posY, size){
+            loader.load( 'font/myFont.json', function ( font ) {
+              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
+              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
+              var mesh = new THREE.Mesh( textGeometry, textMaterial );
+              var xOffset = -25;
+              mesh.position.y = posY;
+              mesh.position.x = thirdPlanet.position.x + xOffset;
+              thirdPlanetGroup.add(mesh)
+          });  
+        }
+
+         function addTextJupiter(text, posY, size){
+            loader.load( 'font/myFont.json', function ( font ) {
+              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
+              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
+              var mesh = new THREE.Mesh( textGeometry, textMaterial );
+              var xOffset = -15;
+              mesh.position.y = posY;
+              mesh.position.x = jupiterMesh.position.x + xOffset;
+              jupiterGroup.add(mesh)
+          });  
+        }
+
+        //on appelle toutes les fonction que l'on vient de creer
+        addTextSun("sun", 22, 10);
+        addTextMars("mars", 5, 5);
+        //addTextEarth("earth", 5, 10);
+        addTextJupiter("jupiter", 10, 5);
+        addTextSaturn("saturn", 15, 5);
+        addTextAstero("astero planet", 15, 5);
+
         // Position camera
         camera.position.y =0; //changement position de la camera pour bien le voir la scene
         camera.position.x=100;
@@ -476,12 +562,13 @@ precision highp float;
         axesHelper = new THREE.AxesHelper( 50 );
         scene.add( axesHelper );
 
-        //creation des deux lumieres ajouter au sphere
+        //LIGHTS
 
-        //light = new THREE.AmbientLight( 0xffffff, 0.6 ); //on met l'intensite a 0.6 pour eviter qu elle soit trop grande
+        
+        var ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 ); //on met l'intensite a 0.6 pour eviter qu elle soit trop grande
+        scene.add(ambientLight);
+
         light2 = new THREE.PointLight( 0xffffff, 1 );
-
-        //sphere.add(light);
         meshSun.add(light2);
 
         //creation du plan + ajout de texture au plan
