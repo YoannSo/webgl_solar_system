@@ -97,15 +97,52 @@ precision highp float;
              //on applique la couleur au triangle
         }
     </script>
+
+<script id="sunVertexShader" type="x-shader/x-vertex">
+#ifdef GL_ES
+precision highp float;
+#endif
+    uniform float u_time;
+    varying vec2 vUv;
+
+    void main()  {
+        vUv = uv;
+        vec3 p = position;
+        // Définition de la position de l'objet
+        p.x = -0.25 + p.x+0.2*cos(u_time*p.x);
+        p.y =  p.y+0.2*cos(u_time*p.y);
+        p.z =  p.z+0.2*cos(u_time*p.z);
+
+        vec4 modelViewPosition = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * modelViewPosition;
+    }
+
+</script>
+
+
+<script id="sunFragmentShader" type="x-shader/x-vertex">
+    uniform sampler2D textureSun;
+    varying vec2 vUv;
+    void main() {
+
+        gl_FragColor = texture2D(textureSun, vUv);
+    }
+</script>
+
+
+
+
+
     <script type="module">
         import * as $ from 'https://code.jquery.com/jquery-3.4.1.min.js'
         export default window.jQuery.noConflict(true)
         import { OrbitControls } from 'https://unpkg.com/three@0.121.1/examples/jsm/controls/OrbitControls.js';
         import { OBJLoader } from 'https://unpkg.com/three@0.121.1/examples/jsm/loaders/OBJLoader.js';
-    let particleSpeed,stateParticle,posPlanets,cometGroup,canvas,sun,geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,meshSun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup, pivotPoint, sunTexture,thirdPlanetTexture, thirdPlanetMaterial, secondPlanetTexture, secondPlanetMaterial, firstPlanetTexture;//init de toutes les var
+    let particleSpeed,stateParticle,posPlanets,cometGroup,canvas,sun,geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup, pivotPoint, sunTexture,thirdPlanetTexture, thirdPlanetMaterial, secondPlanetTexture, secondPlanetMaterial, firstPlanetTexture;//init de toutes les var
     let comet;
     let date,earthDate;
     let meteorite,meteoriteLoader,uniformsMeteorite,meteoriteMaterial;
+        let meshSun,sunMaterial,sunUniforms;
     let jupiterTexture,jupiterMesh,jupiterGroup,jupiterGeometry,jupiterMaterial,pivotJupiterEnceladus,pivotJupiterEuropa;
         let enceladusTexture,enceladusMesh,enceladusGroup,enceladusGeometry,enceladusMaterial;
         let europaTexture,europaMesh,europaGroup,europaGeometry,europaMaterial;
@@ -142,11 +179,19 @@ precision highp float;
         document.body.appendChild(canvas);
 
         // ******** SUN ********
-        geometryBox = new THREE.BoxGeometry(3, 3, 3); //geometry du cube
-        geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 ); //geomtry d'une sphere
+        //geometryBox = new THREE.BoxGeometry(3, 3, 3); //geometry du cube
+        //geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 ); //geomtry d'une sphere
+        sunUniforms = {
+            u_time: { type: "f", value: 1.0 },
+            textureSun:{ type: "t", value: new THREE.TextureLoader().load( "./textures/sun.jpg" ) }
+        };
+        sunMaterial= new THREE.ShaderMaterial({
+            uniforms : sunUniforms,
+            vertexShader : document.getElementById("sunVertexShader").textContent,
+            fragmentShader : document.getElementById("sunFragmentShader").textContent
+        });
         sun = new THREE.SphereGeometry(20,50,50);
-        sunTexture = new THREE.TextureLoader().load("textures/sun.jpg");
-        sunMaterial = new THREE.MeshBasicMaterial({map:sunTexture})
+        //sunMaterial = new THREE.MeshBasicMaterial({map:sunTexture})
         meshSun = new THREE.Mesh(sun,sunMaterial);
         scene.add(meshSun);
 
@@ -1145,6 +1190,7 @@ precision highp float;
             val-=0.1
         }
         earthUniforms.u_time.value = val
+        sunUniforms.u_time.value+=0.005;
         if (meteorite != undefined) {
             if (meteorite.position.x > 550) {
                 meteorite.position.x = -500
