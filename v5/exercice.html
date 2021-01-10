@@ -58,8 +58,8 @@
     </script>
 <script type="x-shader/x-vertex" id="vertexShaderEarth">//vertex script
         #ifdef GL_ES
-precision highp float;
-#endif
+            precision highp float;
+        #endif
         uniform float u_time; //uniform qui va nous permettre de recupere un variable qui va evoluer au cours du temps
         varying vec3 myPosition; // deux varyijng vec3 qui vont nous permettre de recuperer la position du triangle pour changer la couleur par exemple
         varying vec3 vuV;
@@ -98,17 +98,23 @@ precision highp float;
         }
     </script>
 
+
+<!--
+    u_time sera le temps, vec2 sera la position du shader a un moment donnée
+    On modifie la position des points de la sphere en fonction du temps
+-->
 <script id="sunVertexShader" type="x-shader/x-vertex">
-#ifdef GL_ES
-precision highp float;
-#endif
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
     uniform float u_time;
     varying vec2 vUv;
 
     void main()  {
         vUv = uv;
         vec3 p = position;
-        // Définition de la position de l'objet
+        // Définition de la position d'un point de l'objet
         p.x = -0.25 + p.x+0.2*cos(u_time*p.x);
         p.y =  p.y+0.2*cos(u_time*p.y);
         p.z =  p.z+0.2*cos(u_time*p.z);
@@ -124,7 +130,7 @@ precision highp float;
     uniform sampler2D textureSun;
     varying vec2 vUv;
     void main() {
-
+        // Permet d'afficher la texture sur la sphere
         gl_FragColor = texture2D(textureSun, vUv);
     }
 </script>
@@ -179,19 +185,20 @@ precision highp float;
         document.body.appendChild(canvas);
 
         // ******** SUN ********
-        //geometryBox = new THREE.BoxGeometry(3, 3, 3); //geometry du cube
-        //geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 ); //geomtry d'une sphere
+        // Definitions de valeur qui seront aussi utilisé dans les shaders
         sunUniforms = {
             u_time: { type: "f", value: 1.0 },
             textureSun:{ type: "t", value: new THREE.TextureLoader().load( "./textures/sun.jpg" ) }
         };
+        // Définition du materiel de l'objet
         sunMaterial= new THREE.ShaderMaterial({
             uniforms : sunUniforms,
             vertexShader : document.getElementById("sunVertexShader").textContent,
             fragmentShader : document.getElementById("sunFragmentShader").textContent
         });
+
+        // Definition de la géometrie de l'objet
         sun = new THREE.SphereGeometry(20,50,50);
-        //sunMaterial = new THREE.MeshBasicMaterial({map:sunTexture})
         meshSun = new THREE.Mesh(sun,sunMaterial);
         scene.add(meshSun);
 
