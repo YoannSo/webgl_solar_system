@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Projet WebGL - L3</title>
+    <title>Projet WebGL-L3</title>
     <script src="three.min.js"></script>
     <script src="dat.gui.min.js"></script>
     <style>
@@ -14,95 +14,86 @@
     </style>
 </head>
 <body>
-<script type="x-shader/x-vertex" id="vertexShader">//vertex script
 
-        uniform float u_time; //uniform qui va nous permettre de recupere un variable qui va evoluer au cours du temps
-        varying vec3 myPosition; // deux varyijng vec3 qui vont nous permettre de recuperer la position du triangle pour changer la couleur par exemple
+<script type="x-shader/x-vertex" id="vertexShader">//vertex script
+        //--------Premier vertexShader pour la meteorite--------//
+        uniform float u_time; //uniform qui va nous permettre de récupérer  un variable qui va evoluer au cours du temps
+        varying vec3 myPosition; // deux varying vec3 qui vont nous permettre de récupérer la position du triangle pour changer la couleur par exemple
         varying vec3 vuV;
-        varying vec2 textureV;
+        varying vec2 textureV; // vec 2 qui va correspondre au triangle de la texture
           void main()
           {
                 textureV=uv;
-               vuV=position; //on assigne a vuVla position du triangle
+               vuV=position; //on assigne a vuV la position du triangle
                 myPosition=position;//pareil
-               myPosition.y=(myPosition.y+2.0*cos(u_time*myPosition.x));//c'est deux ligne sont pour la deformation =>Le lapin a froid, cela marche grace a notre variable time qui va evoluer au cours du temps
+               myPosition.y=(myPosition.y+2.0*cos(u_time*myPosition.x));//c'est deux ligne sont pour la deformation au cours du temps grace a la variable u_time ici on fait une deformations "de meteorite" pour que l'arriere est une sorte de trainé on utilise pour ca la fonction tangeante
                myPosition.x=(myPosition.x+5.0*tan(u_time*myPosition.y));
                if(myPosition.x>0.0){
-               myPosition.x=position.x;
+               myPosition.x=position.x; // si la position du triangle a x>0 alors on ne met pas l'effet pour qu'il y ait que l'arriere de la meteorite qui soit impacter
                }
-                gl_Position = projectionMatrix *  modelViewMatrix * vec4(myPosition,1.0);
+                gl_Position = projectionMatrix *  modelViewMatrix * vec4(myPosition,1.0); // on calcul la projection des sommets  sur le plan apres modifications
           }
     </script>
-<script type="x-shader/x-vertex" id="fragmentShader">//le script fragment
-        uniform sampler2D texture1;
-           varying vec2 textureV;
+<script type="x-shader/x-vertex" id="fragmentShader">
+    //--------- On arrive ensuite dans le fragment sahder de la meteorite-------//
 
-        varying vec3 vuV;//on recupere vuV
+        uniform sampler2D texture1; // uniforms qu'on envoi depuis le init pour récupérer la texture ici
+           varying vec2 textureV;   // la position d'ou mettre la texture qu'on récupére dans le vertex shader
+        varying vec3 vuV;//on récupére vuV
          void main()
          {
 
-               vec3 rgb=vec3(1.0,0.0,1.0); //on creer un vec3 rgb qu'on initialise a 1.0 1.0 1.0
+               vec3 rgb=vec3(1.0,1.0,1.0); //on creer un vec3 rgb qu'on initialise a 1.0 0.0 1.0
 
                     if(vuV.x<-80.0){
                     rgb.y=0.0;
                     rgb.z=0.0;
-                    gl_FragColor = vec4(rgb,1.0);
+                    gl_FragColor = vec4(rgb,1.0); // si onest avant les x=-80 alors on met le fragColor soit la couleur du triangle en rouge  (l'arriere)
                     }
-                    else{
-                    vec4 text=texture2D(texture1,textureV);
-                    gl_FragColor = text;
+                    else{// sinon
+                    vec4 text=texture2D(texture1,textureV);//on met la texture de la meteorite pour qu'a l'avant de la meteorite on puisse voir la texture
+                    gl_FragColor = text; // on applique la texture au triangle
                     }
-
-               //on applique la couleur au triangle
         }
     </script>
-<script type="x-shader/x-vertex" id="vertexShaderEarth">//vertex script
-        #ifdef GL_ES
-            precision highp float;
-        #endif
+<script type="x-shader/x-vertex" id="vertexShaderEarth">
+
+
         uniform float u_time; //uniform qui va nous permettre de recupere un variable qui va evoluer au cours du temps
         varying vec3 myPosition; // deux varyijng vec3 qui vont nous permettre de recuperer la position du triangle pour changer la couleur par exemple
         varying vec3 vuV;
-        varying vec2 textureV;
-        varying vec3 vNormal;
+        varying vec2 textureV; // pareil que tout a l'heure pour la texture
+        varying vec3 vNormal; // on récupére la vecteur normal du triangle
           void main()
           {     textureV=uv;
              vuV=position; //on assigne a vuVla position du triangle
                 myPosition=position;//pareil
-
-               //myPosition.y=(myPosition.y+u_time)/30.0;//c'est deux ligne sont pour la deformation =>Le lapin a froid, cela marche grace a notre variable time qui va evoluer au cours du temps
-              // myPosition.x=(myPosition.x+u_time)/30.0;
-               //myPosition.z=(myPosition.z+u_time)/30.0;
-        vec3 myPosition = position + normal*u_time*10.0;
+                vec3 myPosition = position + normal*u_time*10.0; // au augmente la position sur l'axe de la normal pour faire un effet d'explosion
                 gl_Position = projectionMatrix *  modelViewMatrix * vec4(myPosition,1.0);
                 vNormal=normal;
           }
     </script>
-<script type="x-shader/x-vertex" id="fragmentShaderEarth">//le script fragment
+<script type="x-shader/x-vertex" id="fragmentShaderEarth">
 
+    //--------- Fragment shader de la terre  --------//
 
-        uniform sampler2D texture1;
-        uniform sampler2D clouds;
+        uniform sampler2D texture1; // on récupére la premiere texture
+        uniform sampler2D clouds;// on  récupére la deuxieme texture des clouds
            varying vec2 textureV;
         varying vec3 vuV;//on recupere vuV
          void main()
          {
 
-            vec3 c;
-                 //vec3 finalTexture;
-                vec4 Ca = texture2D(texture1, textureV);
-            vec4 Cb = texture2D(clouds, textureV);
-            c = Ca.rgb * Ca.a + Cb.rgb * Cb.a ;
-            gl_FragColor= vec4(c, 1.0);
-             //on applique la couleur au triangle
+            vec3 finalTexture; // on prepare un vec3 qui serra la texture final
+            vec4 fT = texture2D(texture1, textureV); // chargement premiere texture
+            vec4 sT = texture2D(clouds, textureV); //chargement deuxieme texture
+            finalTexture = fT.rgb * fT.a + sT.rgb * sT.a ; // on multiplie les deux texture cette formule nous permet de superposer les deux texture
+            gl_FragColor= vec4(finalTexture, 1.0); // on applique la texture au triangle
+            //on applique la couleur au triangle
         }
     </script>
 
 
-<!--
-    u_time sera le temps, vec2 sera la position du shader a un moment donnée
-    On modifie la position des points de la sphere en fonction du temps
--->
 <script id="sunVertexShader" type="x-shader/x-vertex">
     #ifdef GL_ES
     precision highp float;
@@ -140,34 +131,28 @@
 
 
     <script type="module">
-        import * as $ from 'https://code.jquery.com/jquery-3.4.1.min.js'
-        export default window.jQuery.noConflict(true)
+
         import { OrbitControls } from 'https://unpkg.com/three@0.121.1/examples/jsm/controls/OrbitControls.js';
         import { OBJLoader } from 'https://unpkg.com/three@0.121.1/examples/jsm/loaders/OBJLoader.js';
-    let particleSpeed,stateParticle,posPlanets,cometGroup,canvas,sun,geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup, pivotPoint, sunTexture,thirdPlanetTexture, thirdPlanetMaterial, secondPlanetTexture, secondPlanetMaterial, firstPlanetTexture;//init de toutes les var
-    let comet;
-    let date,earthDate;
-    let meteorite,meteoriteLoader,uniformsMeteorite,meteoriteMaterial;
-        let meshSun,sunMaterial,sunUniforms;
-    let jupiterTexture,jupiterMesh,jupiterGroup,jupiterGeometry,jupiterMaterial,pivotJupiterEnceladus,pivotJupiterEuropa;
+        let particleSpeed,stateParticle,posPlanets,cometGroup,canvas,sun,geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,meshSun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup, pivotPoint, sunTexture,thirdPlanetTexture, thirdPlanetMaterial, secondPlanetTexture, secondPlanetMaterial, firstPlanetTexture;//init de toutes les var
+        let comet;
+        let saturneGroup,saturneTexture,saturneMesh,saturneMaterial,saturneGeo,ringMesh1,ringMesh2;
+        let marsGroup,marsTexture,marsMesh,marsMaterial,marsGeo;
+        let date,earthDate;
+        let marsGui,saturneGui,asteroPlanetoGui,sunGui,jupiterGui,earthGui;
+        let meteorite,meteoriteLoader,uniformsMeteorite,meteoriteMaterial;
+        let earthMaterial,earth, earthLoader,uniforms,earthUniforms,val,incremente,earthGroupe;
+        let jupiterTexture,jupiterMesh,jupiterGroup,jupiterGeometry,jupiterMaterial,pivotJupiterEnceladus,pivotJupiterEuropa;
         let enceladusTexture,enceladusMesh,enceladusGroup,enceladusGeometry,enceladusMaterial;
         let europaTexture,europaMesh,europaGroup,europaGeometry,europaMaterial;
-
-        let marsGui,saturneGui,asteroPlanetoGui,sunGui,jupiterGui,earthGui;
-      let rotAxeSaturneX,
-          rotAxeSaturneY,
-          rotAxeSaturneZ,
-          rotAxeAnneauSaturneX1,
-          rotAxeAnneauSaturneY1,
-          rotAxeAnneauSaturneZ1,
-          rotAxeAnneauSaturneX2,
-          rotAxeAnneauSaturneY2,
-          rotAxeAnneauSaturneZ2;
-    //colors
-    var orange = 0xff8000;
-    var yellow = 0xF7B801;
-    let white=0xffffff;
-    let earthMaterial,earth, earthLoader,uniforms,earthUniforms,val,incremente,earthGroupe;
+        let asteroPlanetoGeo,asteroPlanetoTexture,asteroPlanetoMesh,asteroPlanetoMaterial,asteroPlanetoGroup;
+        let sunUniforms;
+        let skyboxTexture,skyboxMesh;
+        let ambientLight,pointsLightSun;
+        //colors
+        var orange = 0xff8000;
+        var yellow = 0xF7B801;
+        let white=0xffffff;
 
     function init() {
         // initialisation scene
@@ -187,225 +172,228 @@
         // ******** SUN ********
         // Definitions de valeur qui seront aussi utilisé dans les shaders
         sunUniforms = {
-            u_time: { type: "f", value: 1.0 },
-            textureSun:{ type: "t", value: new THREE.TextureLoader().load( "./textures/sun.jpg" ) }
+            u_time: { type: "f", value: 1.0 }, //utime qui va etre notre variable qui augmente au cours du temps
+            textureSun:{ type: "t", value: new THREE.TextureLoader().load( "./textures/sun.jpg" ) }//on charge la texture
         };
         // Définition du materiel de l'objet
-        sunMaterial= new THREE.ShaderMaterial({
-            uniforms : sunUniforms,
-            vertexShader : document.getElementById("sunVertexShader").textContent,
+        sunMaterial= new THREE.ShaderMaterial({ //le materialk sun
+            uniforms : sunUniforms, // on refere l'uniforms
+            vertexShader : document.getElementById("sunVertexShader").textContent, // le vertex et fragment shader
             fragmentShader : document.getElementById("sunFragmentShader").textContent
         });
 
-        // Definition de la géometrie de l'objet
+        // ******* SUN *********
         sun = new THREE.SphereGeometry(20,50,50);
         meshSun = new THREE.Mesh(sun,sunMaterial);
         scene.add(meshSun);
 
         // ******** FIRST PLANET ********
-        firstPlanet=new THREE.SphereGeometry(4,50,50);
-        firstPlanetTexture = new THREE.TextureLoader().load("textures/firstPlanet.png");
-        firstPlanetMaterial = new THREE.MeshPhongMaterial( {map:firstPlanetTexture} );
-        firstPlanet= new THREE.Mesh(firstPlanet, firstPlanetMaterial );
-        firstPlanet.position.x=50;
-        firstPlanet.rotation.x=0.5;
-        firstPlanetGroup=new THREE.Group();
-        firstPlanetGroup.add(firstPlanet);
-        scene.add(firstPlanetGroup);
+        marsGeo=new THREE.SphereGeometry(4,50,50); //creation de la geometrie
+        marsTexture = new THREE.TextureLoader().load("textures/firstPlanet.png"); //load de la texture
+        marsTexture = new THREE.MeshBasicMaterial( {map:marsTexture} ); //creation de la texture
+        marsMesh= new THREE.Mesh(marsGeo, marsTexture ); // creation du mesh
+        marsMesh.position.x=50;
+        marsMesh.rotation.x=0.5;
+        marsGroup=new THREE.Group();//creation du groupe
+        marsGroup.add(marsMesh); // on ajoute mars au groupe
+        scene.add(marsGroup); // on ajoute le groupe a la scene
 
         // ******** SECOND PLANET (2 rings) ********
-        secondPlanet = new THREE.SphereGeometry(8,50,50);
-        secondPlanetTexture = new THREE.TextureLoader().load("textures/saturneTexture.jpg");
-        secondPlanetMaterial = new THREE.MeshPhongMaterial( {map:secondPlanetTexture} );
-        secondPlanet = new THREE.Mesh(secondPlanet, secondPlanetMaterial);
+        saturneGeo = new THREE.SphereGeometry(8,50,50); //creation de la geometrie
+        saturneTexture = new THREE.TextureLoader().load("textures/saturneTexture.jpg");//load de la texture
+        saturneMaterial = new THREE.MeshBasicMaterial( {map:saturneTexture} ); //creation de la texture
+        saturneMesh = new THREE.Mesh(saturneGeo, saturneMaterial); // creation du mesh
 
-        ring1 = new THREE.RingGeometry( 10, 11, 30);
+        ring1 = new THREE.RingGeometry( 10, 11, 30); // on creer les 2 ring
         ring2 = new THREE.RingGeometry( 12, 13, 30);
-        secondPlanet.position.x = -100;
-        secondPlanet.rotation.x = 0.5;
 
-        ringMaterial = new THREE.MeshPhongMaterial( { color: yellow, side: THREE.DoubleSide } );
-        mesh = new THREE.Mesh( ring1, ringMaterial );
-        mesh2 = new THREE.Mesh(ring2,ringMaterial);
-        mesh2.position.x = secondPlanet.position.x;
-        mesh2.rotation.x = 0.5;
-        mesh.position.x = secondPlanet.position.x;
-        mesh.rotation.x = 0.5;
-        secondPlanetGroup = new THREE.Group();
-        secondPlanetGroup.add(mesh);
-        secondPlanetGroup.add(secondPlanet);
-        secondPlanetGroup.add(mesh2);
-        scene.add(secondPlanetGroup);
+        saturneMesh.position.x = -100;
+        saturneMesh.rotation.x = 0.5;
 
-        //jupiter
-        jupiterGeometry = new THREE.SphereGeometry(8,50,50);
-        jupiterTexture = new THREE.TextureLoader().load("textures/jupiter.jfif");
-        jupiterMaterial = new THREE.MeshPhongMaterial( {map:jupiterTexture} );
-        jupiterMesh = new THREE.Mesh(jupiterGeometry, jupiterMaterial);
+        ringMaterial = new THREE.MeshBasicMaterial( { color: yellow, side: THREE.DoubleSide } ); // on setup le material pour les ring
+        ringMesh1 = new THREE.Mesh( ring1, ringMaterial ); // mesh premier ring
+        ringMesh2 = new THREE.Mesh(ring2,ringMaterial);//mesh deuxieme ring
+        ringMesh2.position.x = saturneMesh.position.x; // on setup la position des ring
+        ringMesh2.rotation.x = 0.5;
+        ringMesh1.position.x = saturneMesh.position.x;
+        ringMesh1.rotation.x = 0.5;
+
+        saturneGroup = new THREE.Group();//creation du groupe saturne
+        saturneGroup.add(ringMesh1);// on ajoute les ring et la planete au groupe
+        saturneGroup.add(saturneMesh);
+        saturneGroup.add(ringMesh2);
+        scene.add(saturneGroup);//on ajoute le groupe a la scene
+
+
+        //********* JUPITER ***********
+        jupiterGeometry = new THREE.SphereGeometry(8,50,50); //creation geometry
+        jupiterTexture = new THREE.TextureLoader().load("textures/jupiter.jfif"); //load texture
+        jupiterMaterial = new THREE.MeshBasicMaterial( {map:jupiterTexture} );//creation texture
+        jupiterMesh = new THREE.Mesh(jupiterGeometry, jupiterMaterial); //creation de jupiter
         jupiterMesh.position.x=140;
-        jupiterGroup = new THREE.Group();
-        jupiterGroup.add(jupiterMesh);
-        scene.add(jupiterGroup);
+        jupiterGroup = new THREE.Group(); //creation du groupe
+        jupiterGroup.add(jupiterMesh);//on add au groupe le mesh
+        scene.add(jupiterGroup);//on ajoute le groupe a la scene
+
+            //CREATION D'une des lunes de jupiter
 
         europaGeometry = new THREE.SphereGeometry(1,50,50);
         europaTexture = new THREE.TextureLoader().load("textures/europaTexture.jpg");
         europaMaterial = new THREE.MeshBasicMaterial( {map:europaTexture} );
         europaMesh = new THREE.Mesh(europaGeometry, europaMaterial);
 
+        // creation de la deuxieme lunes
+
         enceladusGeometry = new THREE.SphereGeometry(1,50,50);
         enceladusTexture = new THREE.TextureLoader().load("textures/enceladusTexture.jpg");
         enceladusMaterial = new THREE.MeshBasicMaterial( {map:enceladusTexture} );
         enceladusMesh = new THREE.Mesh(enceladusGeometry, enceladusMaterial);
 
+        // creation d'un groupe par lune pour faire tourner autour de jupiter et on les add au group de jupiter
         pivotJupiterEnceladus = new THREE.Object3D();
         jupiterMesh.add(pivotJupiterEnceladus);
         pivotJupiterEuropa = new THREE.Object3D();
         jupiterMesh.add(pivotJupiterEuropa);
 
+        //  on ajoute les deux lunes au groupe respectif
         pivotJupiterEnceladus.add(enceladusMesh)
         pivotJupiterEuropa.add(europaMesh)
 
+        //on setup leurs positions
         enceladusMesh.position.x=12
         enceladusMesh.position.y=3
         europaMesh.position.y=15
         europaMesh.position.x=3
 
-        posPlanets=new Array();// on doit faire un array car le problemes c'est que les groupes on comme Pos0
 
-        // ******** THIRD PLANET (belt of asteroids) ********
-        thirdPlanet = new THREE.SphereGeometry(12,50,50);
-        thirdPlanetTexture = new THREE.TextureLoader().load("textures/asteroidPlanet.jpg")
-        thirdPlanetMaterial = new THREE.MeshPhongMaterial( {map:thirdPlanetTexture} );
-        thirdPlanet = new THREE.Mesh(thirdPlanet, thirdPlanetMaterial);
-        thirdPlanet.position.x = -200;
-        thirdPlanet.rotation.x = 0.2;
+        // ******** Astero planeto (belt of asteroids) ********
+        //setup de la planete
+        asteroPlanetoGeo = new THREE.SphereGeometry(12,50,50);
+        asteroPlanetoTexture = new THREE.TextureLoader().load("textures/asteroidPlanet.jpg")
+        asteroPlanetoMaterial = new THREE.MeshBasicMaterial( {map:asteroPlanetoTexture} );
+        asteroPlanetoMesh = new THREE.Mesh(asteroPlanetoGeo, asteroPlanetoMaterial);
+        asteroPlanetoMesh.position.x = -200;
+        asteroPlanetoMesh.rotation.x = 0.2;
 
-        thirdPlanetGroup = new THREE.Group();
+        asteroPlanetoGroup = new THREE.Group(); // on init un groupe pour cette planete
 
         //asteroids
         var asteroidMinHeight = -3; //ces variables permettent de limiter les positions des asteroides
         var asteroidMaxHeight = 3;
         var asteroidMaxRadius = 50;
 
-        pivotPoint = new THREE.Object3D(); //on cree un point de pivot pour faciliter la suite
-        thirdPlanet.add(pivotPoint);
+        pivotPoint = new THREE.Object3D(); // on init un groupe pour les asteroides et on l'add au groupe de la planete
+        asteroPlanetoMesh.add(pivotPoint);
         
         for(var i = 0; i < 20; i++){  //on cree une boucle pour creer pleins d'asteroides qui vont constituer la ceinture
             for(var j = 0; j < 20; j++){
-                var randomX = Math.random();
+                var randomX = Math.random(); // on genere 3 nombre random
                 var randomY = Math.random();
                 var randomZ = Math.random();
-                var asteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ);
+                var asteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ); // creation d'un cude a l'aide des aleatoires
                 var asteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif");
                 var asteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
                 //to make a circle shape with the asteroids (uniformally fill a circle)
-                var a = Math.random() * 2 * Math.PI;
+                var a = Math.random() * 2 * Math.PI; // ensuite on va faire des random pour la positions de l'asteroide
                 var r = asteroidMaxRadius * Math.sqrt(Math.random());
                 var x = r * Math.cos(a) ;
                 var z = r * Math.sin(a) ;
                 var asteroidMesh = new THREE.Mesh(asteroidGeometry, asteroidMaterial);
                 asteroidMesh.position.x = x;
-                asteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight);
+                asteroidMesh.position.y = (Math.random() * (asteroidMaxHeight - asteroidMinHeight) + asteroidMinHeight); // on limite la position
                 asteroidMesh.position.z = z;
-                pivotPoint.add(asteroidMesh); 
+                pivotPoint.add(asteroidMesh);  // on add l'asteroide a la fin de la boucle et on repete ceci
             }
         }
 
-        thirdPlanetGroup.add(thirdPlanet); //on ajoute notre planete a notre groupe
-        scene.add(thirdPlanetGroup);
+        asteroPlanetoGroup.add(asteroPlanetoMesh); //on ajoute notre planete a notre groupe
+        scene.add(asteroPlanetoGroup); // on ajoute le groupe a la scene
 
-        //meteorite shader 3d
-        uniforms = {
+        //************** meteorite shader 3d ***********************//
+        uniformsMeteorite = { // uniforms de la meteorite=>variable qui vont etre envoyer aux fragment et vertex shader
             u_time: { type: "f", value: 1.0 },
-            texture1: { type: "t", value: new THREE.TextureLoader().load( "textures/asteroid.jfif" ) }
+            texture1: { type: "t", value: new THREE.TextureLoader().load( "textures/asteroid.jfif" ) } // on envoie la texture de l'asteroide
 
         };
 
-        meteoriteMaterial=new THREE.ShaderMaterial( {
-            uniforms:uniforms, //on lie l'uniform qu'on a creer
+        meteoriteMaterial=new THREE.ShaderMaterial( { // le material de l'asteroide
+            uniforms:uniformsMeteorite, //on lie l'uniform qu'on a creer
             vertexShader: document.getElementById( 'vertexShader' ).textContent, //et les deux script
             fragmentShader: document.getElementById( 'fragmentShader' ).textContent
         } );
 
-        meteoriteLoader= new OBJLoader(); //creation d'un loader pour load l'objet 3d lapin
+        meteoriteLoader= new OBJLoader(); //creation d'un loader pour load l'objet 3d
         meteoriteLoader.load( "./earthObj.obj", function(objet){
 
-           // texture = new THREE.TextureLoader().load("./texture.jpg"); //deuxieme lapin simple qui aura la texture lapin
-            let material2 = new THREE.MeshBasicMaterial( { map: texture} );
-            objet.traverse( function ( child ) { //creation du lapin
+            objet.traverse( function ( child ) { //creation de la sphere
                 if (child.isMesh)
                 {
-                    child.material = meteoriteMaterial; //on lui applique la material
+                    child.material = meteoriteMaterial; //on lui applique le material
                     child.geometry.computeVertexNormals();
                 }});
             objet.rotation.set(5,0,0)
-            objet.scale.set(0.01,0.01,0.01);// on augmente la taille du lapin car il est tout petit
-            objet.position.set(50,50,50)
-            meteorite=objet;
+            objet.scale.set(0.01,0.01,0.01);// on baisse la taille de la sphere car elle est enorme
+            objet.position.set(50,50,50) // on set la position de l'objet
+            meteorite=objet; // on met l'ojet dans la variable meteorite pour garder l'objets hors d'ici
             scene.add(objet); // on l'add a la scene
-            //console.log(objet)
-
         });
 
-        //terre 3d
-        earthUniforms = {
-            u_time: { type: "f", value: 1.0 },
+        //******* TERRE 3D *******//
+        earthUniforms = { //uniforms pour la terre
+            u_time: { type: "f", value: 1.0 }, // on y envoie 1 valeur qui varie en fonction du temps et deux textures
             texture1: { type: "t", value: new THREE.TextureLoader().load( "texture.jpg" ) },
             clouds: { type: "t", value: new THREE.TextureLoader().load( "clouds.jpg" ) }
 
         };
 
-        earthMaterial=new THREE.ShaderMaterial( {
+        earthMaterial=new THREE.ShaderMaterial( { //earth material
             uniforms:earthUniforms, //on lie l'uniform qu'on a creer
             vertexShader: document.getElementById( 'vertexShaderEarth' ).textContent, //et les deux script
             fragmentShader: document.getElementById( 'fragmentShaderEarth' ).textContent
         } );
 
-        earthLoader= new OBJLoader(); //creation d'un loader pour load l'objet 3d lapin
+        earthLoader= new OBJLoader(); //creation d'un loader pour load l'objet 3d
         earthLoader.load( "./earthObj.obj", function(objet){
             earthGroupe=new THREE.Group();
-            // texture = new THREE.TextureLoader().load("./texture.jpg"); //deuxieme lapin simple qui aura la texture lapin
-            //let material2 = new THREE.MeshBasicMaterial( { map: texture} );
-            objet.traverse( function ( child ) { //creation du lapin
+            objet.traverse( function ( child ) { //creation de la sphere
                 if (child.isMesh)
                 {
-                    child.material = earthMaterial; //on lui applique la material
+                    child.material = earthMaterial; //on lui applique le material
                     child.geometry.computeVertexNormals();
 
 
                 }});
             objet.rotation.set(5,0,0)
-            objet.scale.set(0.01,0.01,0.01);// on augmente la taille du lapin car il est tout petit
+            objet.scale.set(0.01,0.01,0.01);// on baisse la taille de la sphere car elle est enorme
             objet.position.set(-50,0,50)
-            earthGroupe.add(objet); // on l'add a la scene
-            console.log(objet)
-            scene.add(earthGroupe)
+            earthGroupe.add(objet); // on l'add au groupe de la terre
+            scene.add(earthGroupe)// on add a la scene
+
+
+            // CREATION DE LA TRAJECTOIRE
             let earthTrajectory=createTrajectory(71)
-            earthTrajectory.rotateX(Math.PI / 2)
-            earthGroupe.add(earthTrajectory)
-
-
+            earthTrajectory.rotateX(Math.PI / 2)//on rotate la trajectoire pour qu'elle soit sur le meme axe que la planete
+            earthGroupe.add(earthTrajectory)// on l'add au groupe
             //test
 
-            function addTextEarth(text, posY, size){
+            function addTextEarth(text, posY, size){ // function qui va permettre d'avoir un text au dessus de la planete (on a du mettre la fonction ici car on a pas sus faire autrement nous aviosn quelque probleme pour la terre)
             loader.load( 'font/myFont.json', function ( font ) {
-              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
-              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
-              var mesh = new THREE.Mesh( textGeometry, textMaterial );
+              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });//creation text geometry
+              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });//creation du material
+              var mesh = new THREE.Mesh( textGeometry, textMaterial );//et ensuite creation du mesh
               var xOffset = -28;
+              // on setup la position
               mesh.position.y = posY;
               mesh.position.x = objet.position.x  - 8;
               mesh.position.z = objet.position.z ;
-              earthGroupe.add(mesh);
+              earthGroupe.add(mesh); // pour enfin add le mesh au groupe
           });  
         }
-        addTextEarth("earth", 10, 5);
-
+        addTextEarth("earth", 10, 5);//appel de la fonction
         });
 
 
-    incremente=true
-        val=0
+
 
         // ******** ENVIRONMENT ASTEROIDS ********
         var envAsteroidMaxRadius = 500; //variables qui controllent les positions des asteroides dans l'environnement
@@ -420,172 +408,130 @@
                 var envAsteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ);
                 var envAsteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif"); //on leur applique la bonne texture
                 var envAsteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
+                //creation d'une taille random
                 var a = Math.random() * 2 * Math.PI;
                 var r = envAsteroidMaxRadius * Math.sqrt(Math.random());
                 var x = r * Math.cos(a) ;
                 var z = r * Math.sin(a) ;
-                var envAsteroidMesh = new THREE.Mesh(envAsteroidGeometry, envAsteroidMaterial);
+                var envAsteroidMesh = new THREE.Mesh(envAsteroidGeometry, envAsteroidMaterial); // creation de la mesh
+                //setup de la position
                 envAsteroidMesh.position.x = x ;
                 envAsteroidMesh.position.y = (Math.random() * (envAsteroidMaxHeight - envAsteroidMinHeight) + envAsteroidMinHeight); //on se sert des variables plus haut pour determiner leur positions dans l'espace
                 envAsteroidMesh.position.z = z ;
+                //on l'ajoute a la scene
                 scene.add(envAsteroidMesh);
 
             }
         }
     cometGroup=[];
-    for(let i=0;i<100;i++) {
-        let rand = Math.random();
-        let cometGeo = new THREE.IcosahedronGeometry(1);
-        let materialComet = new THREE.MeshBasicMaterial({color: white});
-        let meshGeo = new THREE.Mesh(cometGeo, materialComet);
-        scene.add(meshGeo);
-        cometGroup.push(meshGeo);
+    for(let i=0;i<100;i++) { //FOR qui va nous permettre de creer des petites particules qui bouges
+        let cometGeo = new THREE.IcosahedronGeometry(1); // creation d'une geometrie
+        let materialComet = new THREE.MeshBasicMaterial({color: white});// le material
+        let meshGeo = new THREE.Mesh(cometGeo, materialComet);//le mesh
+        scene.add(meshGeo); // on add ca dans la scene
+        cometGroup.push(meshGeo);// et on push le mesh dans le tableau de comet
        // meshGeo.setRotate.x=Math.random();
-        meshGeo.position.x = Math.random() * (400 + 400) - 600;
+        meshGeo.position.x = Math.random() * (400 + 400) - 600; // on genere une position aleatoirement mais entre certainne valeur ici entre 400 et -400
         meshGeo.position.z = Math.random() * (600 + 400) - 400;
-        if (i < 100 / 2) {
+        if (i < 100 / 2) { // if qui va nous permttre de faire en sorte qu'il y aura pas de comet dans les planetes on va les placer au debut en dessous et apres au dessus
             meshGeo.position.y = Math.random() * (-50 - 50) - 50;
         } else {
             meshGeo.position.y = Math.random() * (50 + 50) + 50;
         }
 
-        //cometGroup[i];
+
     }
-
-        //let lightComet=new THREE.PointLight(white,2)
-
-       // meshGeo.add(lightComet);
-
-
-
 
         // ******** TRAJECTORIES ********
         //fonction qui cree une trajectoire d'une planete en specifiant le rayon
         function createTrajectory(radius) {
-            let circleGeometry = new THREE.CircleGeometry(radius, 100);
-            circleGeometry.vertices.splice(0, 1); 
+            let circleGeometry = new THREE.CircleGeometry(radius, 100); //creation d'un circle geometry grace au radius en parametre
+            circleGeometry.vertices.splice(0, 1);
             return new THREE.LineLoop(circleGeometry, new THREE.LineBasicMaterial({ color: "gray" }));
         }
         //on rotateX la trajectoire de PI / 2 pour que elle soit a l'horizontale
-        console.log(jupiterMesh)
-        let firstPlanetTrajectory = createTrajectory(firstPlanet.position.x);
-        firstPlanetTrajectory.rotateX( Math.PI / 2 );
-        firstPlanetGroup.add(firstPlanetTrajectory);
 
-        let jupiterTrajectory=createTrajectory(jupiterMesh.position.x)
+        let marsTrajectory = createTrajectory(marsMesh.position.x);// on return le mesh de mars a l'aide de la position.x de mars
+        marsTrajectory.rotateX( Math.PI / 2 ); // on la rotate pour que ca soit sur le meme axe que la planete
+        marsGroup.add(marsTrajectory); // on add au groupe de mars
+
+        let jupiterTrajectory=createTrajectory(jupiterMesh.position.x) //comme pour mars
         jupiterTrajectory.rotateX(Math.PI / 2)
         jupiterGroup.add(jupiterTrajectory)
 
 
 
-        let secondPlanetTrajectory = createTrajectory(secondPlanet.position.x);
-        secondPlanetTrajectory.rotateX( Math.PI / 2 );
-        secondPlanetGroup.add(secondPlanetTrajectory);
+        let saturneTrajectory = createTrajectory(saturneMesh.position.x); //comme pour mars
+        saturneTrajectory.rotateX( Math.PI / 2 );
+        saturneGroup.add(saturneTrajectory);
 
-        let thirdPlanetTrajectory = createTrajectory(thirdPlanet.position.x);
-        thirdPlanetTrajectory.rotateX( Math.PI / 2 );
-        thirdPlanetGroup.add(thirdPlanetTrajectory);
-
-
-        //********* a enlever ??? ***********
-
-        //creation de notre materiel pour les objets
-        // material = new THREE.MeshStandardMaterial()
-
-        // // ajout de texture pour le fun
-        // // texture = new THREE.TextureLoader().load('texture.jpg');
-        // // planeMaterial=new THREE.MeshStandardMaterial({map:texture});
-
-        // // On crée un cube a l'aide de notre geometry box et notre material
-        // cube = new THREE.Mesh(geometryBox, material);
-
-        // // changer la position du cube et l'ajouter a la scene
-        // cube.position.z=5;
-        // scene.add(cube);
-
-        // alpha=0; //variable qui vont nous permettre la trajectoire circulaire
-        // alpha2=0;
-        // alpha3=0;
-        // *************************************
-
-        
-
+        let asteroPlanetoTrajectory = createTrajectory(asteroPlanetoMesh.position.x); //comme pour mars
+        asteroPlanetoTrajectory.rotateX( Math.PI / 2 );
+        asteroPlanetoGroup.add(asteroPlanetoTrajectory);
 
 
         // ******** SPACE BACKGROUND ********
-        skybox=new THREE.SphereGeometry(500,500,500);
-        //skyboxMaterial=new THREE.MeshBasicMaterial({map: new THREE.TextureLoader("space.png"),side: THREE.DoubleSide});
-        // mat=new THREE.MeshFaceMaterial(skyboxMaterial);
-        texture1 = new THREE.TextureLoader().load("textures/space.png");
-        skyboxMaterial=new THREE.MeshBasicMaterial({map:texture1,side:THREE.DoubleSide});
-        test=new THREE.Mesh(skybox,skyboxMaterial);
-        scene.add(test);
+
+        skybox=new THREE.SphereGeometry(500,500,500);//creation d'une sphere enorme qui va nous servir de skybox
+        skyboxTexture = new THREE.TextureLoader().load("textures/space.png");//on init une texture
+        skyboxMaterial=new THREE.MeshBasicMaterial({map:skyboxTexture,side:THREE.DoubleSide});//on init un material et on le DOUBLESIDE pour qu'on puisse voir la texture a l'interieur
+        skyboxMesh=new THREE.Mesh(skybox,skyboxMaterial); //creation du mesh
+        scene.add(skyboxMesh); // on l'ajoute a la scene
 
 
         // ******** TEXT ABOVE PLANETS ********
-        var loader = new THREE.FontLoader();
-
+        var loader = new THREE.FontLoader(); //fonction qu'on va appeler avec toutes les planetes
         function addTextSun(text, posY, size){
-            loader.load( 'font/myFont.json', function ( font ) {
-              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
-              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
-              var mesh = new THREE.Mesh( textGeometry, textMaterial );
-              var xOffset = -12;
+            loader.load( 'font/myFont.json', function ( font ) { // on recupere une font
+              var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });// creation geometry du text
+              var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff }); // creation du material
+              var mesh = new THREE.Mesh( textGeometry, textMaterial ); //creation du mesh
+                //setup de la position
+              var xOffset = -12; // off set qui va nous permttre a placer le text centrer au dessus des planetes
               mesh.position.y = posY;
               mesh.position.x = meshSun.position.x + xOffset;
-              scene.add(mesh);
+              scene.add(mesh);//et on l'ajoute al a scene
           });  
         }
 
-        function addTextMars(text, posY, size){
+        function addTextMars(text, posY, size){ //pareil que pour sun
             loader.load( 'font/myFont.json', function ( font ) {
               var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
               var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
               var mesh = new THREE.Mesh( textGeometry, textMaterial );
               var xOffset = -7;
               mesh.position.y = posY;
-              mesh.position.x = firstPlanet.position.x + xOffset;
-              firstPlanetGroup.add(mesh)
+              mesh.position.x = marsMesh.position.x + xOffset;
+              marsGroup.add(mesh)
           });  
         }
 
-        // function addTextEarth(text, posY, size){
-        //     loader.load( 'font/myFont.json', function ( font ) {
-        //       var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
-        //       var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
-        //       var mesh = new THREE.Mesh( textGeometry, textMaterial );
-        //       var xOffset = -7;
-        //       mesh.position.y = posY;
-        //       //mesh.position.x = earth.position.x + xOffset;
-        //       earthGroupe.add(mesh)
-        //   });  
-        // }
 
-        function addTextSaturn(text, posY, size){
+        function addTextSaturn(text, posY, size){ //pareil que pour sun
             loader.load( 'font/myFont.json', function ( font ) {
               var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
               var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
               var mesh = new THREE.Mesh( textGeometry, textMaterial );
               var xOffset = -10;
               mesh.position.y = posY;
-              mesh.position.x = secondPlanet.position.x + xOffset;
-              secondPlanetGroup.add(mesh)
+              mesh.position.x = saturneMesh.position.x + xOffset;
+              saturneGroup.add(mesh)
           });  
         }
 
-        function addTextAstero(text, posY, size){
+        function addTextAstero(text, posY, size){ //pareil que pour sun
             loader.load( 'font/myFont.json', function ( font ) {
               var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
               var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
               var mesh = new THREE.Mesh( textGeometry, textMaterial );
               var xOffset = -25;
               mesh.position.y = posY;
-              mesh.position.x = thirdPlanet.position.x + xOffset;
-              thirdPlanetGroup.add(mesh)
+              mesh.position.x = asteroPlanetoMesh.position.x + xOffset;
+              asteroPlanetoGroup.add(mesh)
           });  
         }
 
-         function addTextJupiter(text, posY, size){
+         function addTextJupiter(text, posY, size){ //pareil que pour sun
             loader.load( 'font/myFont.json', function ( font ) {
               var textGeometry = new THREE.TextGeometry( text, { font: font, size: size, height: 1, curveSegments: 12 });
               var textMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
@@ -600,12 +546,9 @@
         //on appelle toutes les fonction que l'on vient de creer
         addTextSun("sun", 22, 10);
         addTextMars("mars", 5, 5);
-        
         addTextJupiter("jupiter", 10, 5);
         addTextSaturn("saturn", 15, 5);
-        addTextAstero("astero planet", 15, 5);
-
-        // addTextEarth("earth", 5, 10);
+        addTextAstero("astero planeto", 15, 5);
 
         // Position camera
         camera.position.y =0; //changement position de la camera pour bien le voir la scene
@@ -615,95 +558,94 @@
         controls = new OrbitControls( camera , renderer.domElement );//controle de camera
         controls.maxDistance = 450; //you can't escape space ! (limit max de-zoom)
 
-
-        //********* a enlever ??? ***********
-        // creation des deux sphere +position
-
-        // sphere=new THREE.Mesh(geometrySphere,material);
-        // sphere2=new THREE.Mesh(geometrySphere,material);
-        // //on initialise la position des sphere au depart
-        // sphere.position.z=5;
-        // sphere.position.x=8;
-        // sphere2.position.z=5;
-        // sphere2.position.x=-8;
-        // scene.add(sphere);
-        // scene.add(sphere2);
-        // **********************************
-
-        axesHelper = new THREE.AxesHelper( 50 );
-        scene.add( axesHelper );
-
         //LIGHTS
 
-        
-        var ambientLight = new THREE.AmbientLight( 0xffffff, 0.3 ); 
+        ambientLight = new THREE.AmbientLight( 0xffffff, 0.3 );
         scene.add(ambientLight);
 
-        light2 = new THREE.PointLight( orange, 3, 300 );
-        meshSun.add(light2);
-
-        //creation du plan + ajout de texture au plan
-        geometryPlane = new THREE.PlaneGeometry( 100, 100, 5 ); //on met un plan assez grand
-        plane = new THREE.Mesh( geometryPlane, planeMaterial );
-        // scene.add( plane );
+        pointsLightSun = new THREE.PointLight( orange, 3, 300 );
+        meshSun.add(pointsLightSun);
 
 
-        window.addEventListener('click',onDocumentMouseDown,false);
+        window.addEventListener('click',onDocumentMouseDown,false);// on ajoute un listener qui va detecter si l'user click et va lancer la function onDocumentMouseDown
 
-        //creation du dat.gui
+        //creation des dat.gui
+        //init de toutes les interfaces
         marsGui = new dat.GUI({name: 'MARS'});
         saturneGui = new dat.GUI({name: 'SATURNE'});
         jupiterGui=new dat.GUI({name:"JUPITER"})
         asteroPlanetoGui = new dat.GUI({name: 'ASTEROPLANETO'});
         sunGui=new dat.GUI({name:'SUN'})
         earthGui=new dat.GUI({name:'SUN'})
+        //setup de valeurs qui vont nous servir pour le dat
+        incremente=true
+        val=0
         var max = 1
         var min = -1
-        options={  //var qui va nous permettre de setup une rotX et rotY et pour pouvoir aussi l'arreter
+        options={
+            //var qui va nous permettre de setup une speed des planetes 1 pour chaque planetes
         rotY_1PG:0.001,
         rotY_2PG:0.002,
         rotY_3PG:0.0007,
-            rotY_4PG:0.0007,
-            rotY_5PG:0.0007,
-            rotAxeEarthX:0.01,
-            rotAxeEarthY:0.01,
-            rotAxeEarthZ:0.01,
-            rotAxeSaturneX:0.01,
-            rotAxeSaturneY:0.01,
-            rotAxeSaturneZ:0.01,
-            rotAxeAnneauSaturneX1:0.01,
-            rotAxeAnneauSaturneY1:0.01,
-            rotAxeAnneauSaturneZ1:0.01,
-            rotAxeAnneauSaturneX2:0.01,
-            rotAxeAnneauSaturneY2:0.01,
-            rotAxeAnneauSaturneZ2:0.01,
-            rotAxeMarsX:0.01,
-            rotAxeMarsY:0.01,
-            rotAxeMarsZ:0.01,
-            rotAxeAsteroPlanetoX:0.01,
-            rotAxeAsteroPlanetoY:0.01,
-            rotAxeAsteroPlanetoZ:0.01,
-            rotAxeJupiterX:0.01,
-            rotAxeJupiterY:0.01,
-            rotAxeJupiterZ:0.01,
-            rotYEnceladus:0.01,
-            rotYEuropa:0.01,
-            particleSpeed:0.01,
-            stateParticle:"x",
-            meteoriteSpeed:0.1,
+        rotY_4PG:0.0007,
+        rotY_5PG:0.0007,
 
-        stopALL:function (){
+            // rotation de la terre
+        rotAxeEarthX:0.01,
+        rotAxeEarthY:0.01,
+        rotAxeEarthZ:0.01,
+
+            // rotation de Saturne
+        rotAxeSaturneX:0.01,
+        rotAxeSaturneY:0.01,
+        rotAxeSaturneZ:0.01,
+        rotAxeAnneauSaturneX1:0.01,
+        rotAxeAnneauSaturneY1:0.01,
+        rotAxeAnneauSaturneZ1:0.01,
+        rotAxeAnneauSaturneX2:0.01,
+        rotAxeAnneauSaturneY2:0.01,
+        rotAxeAnneauSaturneZ2:0.01,
+
+            // rotation de Mars
+
+        rotAxeMarsX:0.01,
+        rotAxeMarsY:0.01,
+        rotAxeMarsZ:0.01,
+
+            // rotation de Astero Planeto
+        rotAxeAsteroPlanetoX:0.01,
+        rotAxeAsteroPlanetoY:0.01,
+        rotAxeAsteroPlanetoZ:0.01,
+
+            // rotation de Jupiter
+
+
+        rotAxeJupiterX:0.01,
+        rotAxeJupiterY:0.01,
+        rotAxeJupiterZ:0.01,
+        rotYEnceladus:0.01,
+        rotYEuropa:0.01,
+
+            //pour avoir la particle speed et meteorite speed
+        particleSpeed:0.01,
+        stateParticle:"x", // pour savoir si les particle vont dans le sens des x ou des y
+        meteoriteSpeed:0.1,
+
+        stopALL:function (){ // fonction qui stop toutes les planetes on met justes toutes les variables a 0
             this.rotY_1PG = 0;
             this.rotY_2PG = 0;
             this.rotY_3PG = 0;
-            t
+            this.rotY_5PG=0;
+            this.rotY_4PG=0
         },
-        randomALL:function(){
+        randomALL:function(){ // fonction qui va mettre une speed random entre min et max a toutes les planetes
             this.rotY_1PG = (Math.random() * (max - min) + min)/10;
             this.rotY_2PG = (Math.random() * (max - min) + min)/10;
             this.rotY_3PG = (Math.random() * (max - min) + min)/10;
+            this.rotY_5PG=(Math.random() * (max - min) + min)/10;
+            this.rotY_4PG=(Math.random() * (max - min) + min)/10;
         },
-            stopAsteroPlaneto:function (){
+            stopAsteroPlaneto:function (){ //suite de fonction qui vont stop UNE planete
                 this.rotY_3PG = 0;
             },
             stopSaturne:function (){
@@ -721,7 +663,7 @@
             stopEuropa:function (){
                 this.rotYEuropa=0
             },
-            randomJupiter:function (){
+            randomJupiter:function (){ // suite de fonction qui vont mettre une vitesse random a UNE certainne planete
                 this.rotY_4PG = (Math.random() * (max - min) + min)/10;
             },
             randomEnceladus:function (){
@@ -730,29 +672,25 @@
             randomEuropa:function (){
                 this.rotYEuropa=(Math.random() * (max - min) + min)/10
             },
-            stopRotSaturne:function (){
-                this.rotAxeSaturneX=0
-                    this.rotAxeSaturneY=0
-                    this.rotAxeSaturneZ=0
-                    this.rotAxeAnneauSaturneX1=0
-                    this.rotAxeAnneauSaturneY1=0
-                    this.rotAxeAnneauSaturneZ1=0
-                    this.rotAxeAnneauSaturneX2=0
-                    this.rotAxeAnneauSaturneY2=0
-                    this.rotAxeAnneauSaturneZ2=0
+            randomAsteroPlaneto:function (){
+                this.rotY_3PG = (Math.random() * (max - min) + min)/10;
             },
+            randomSaturne:function (){
+                this.rotY_2PG = (Math.random() * (max - min) + min)/10;
+            },
+            randomMars:function (){
+                this.rotY_1PG = (Math.random() * (max - min) + min)/10;
+            },
+
+
             stopEarth:function(){
             this.rotY_5PG=0;
             },
             randomEarth:function (){
                 this.rotY_5PG=(Math.random() * (max - min) + min)/10;
             },
-            stopRotEarth:function (){
-                this.rotAxeEarthX=0
-                this.rotAxeEarthY=0
-                this.rotAxeEarthZ=0
-            },
-            randomRotEarth:function (){
+
+            randomRotEarth:function (){ // suite de fonction qui vont mettre une rotation des planetes random
                 this.rotAxeEarthX=(Math.random() * (max - min) + min)/10
                 this.rotAxeEarthY=(Math.random() * (max - min) + min)/10
                 this.rotAxeEarthZ=(Math.random() * (max - min) + min)/10
@@ -769,21 +707,11 @@
                 this.rotAxeAnneauSaturneY2=(Math.random() * (max - min) + min)/10
                 this.rotAxeAnneauSaturneZ2=(Math.random() * (max - min) + min)/10
             },
-            stopRotMars:function (){
-                this.rotAxeMarsX=0
-                this.rotAxeMarsY=0
-                this.rotAxeMarsZ=0
-            },
             randomRotMars:function (){
                 this.rotAxeMarsX=(Math.random() * (max - min) + min)/10
                 this.rotAxeMarsY=(Math.random() * (max - min) + min)/10
                 this.rotAxeMarsZ=(Math.random() * (max - min) + min)/10
 
-            },
-            stopRotJupiter:function (){
-                this.rotAxeJupiterX=0
-                this.rotAxeJupiterY=0
-                this.rotAxeJupiterZ=0
             },
             randomRotJupiter:function (){
                 this.rotAxeJupiterX=(Math.random() * (max - min) + min)/10
@@ -791,73 +719,89 @@
                 this.rotAxeJupiterZ=(Math.random() * (max - min) + min)/10
 
             },
-            stopRotAsteroPlaneto:function (){
-                this.rotAxeAsteroPlanetoX=0
-                this.rotAxeAsteroPlanetoY=0
-                this.rotAxeAsteroPlanetoZ=0
-            },
             randomRotAsteroPlaneto:function (){
                 this.rotAxeAsteroPlanetoX=(Math.random() * (max - min) + min)/10
                 this.rotAxeAsteroPlanetoY=(Math.random() * (max - min) + min)/10
                 this.rotAxeAsteroPlanetoZ=(Math.random() * (max - min) + min)/10
 
             },
+            stopRotSaturne:function (){// suite de fonction qui vont stopper la rotation d'une certainne planete
+                this.rotAxeSaturneX=0
+                this.rotAxeSaturneY=0
+                this.rotAxeSaturneZ=0
+                this.rotAxeAnneauSaturneX1=0
+                this.rotAxeAnneauSaturneY1=0
+                this.rotAxeAnneauSaturneZ1=0
+                this.rotAxeAnneauSaturneX2=0
+                this.rotAxeAnneauSaturneY2=0
+                this.rotAxeAnneauSaturneZ2=0
+            },
+            stopRotMars:function (){
+                this.rotAxeMarsX=0
+                this.rotAxeMarsY=0
+                this.rotAxeMarsZ=0
+            },
+            stopRotEarth:function (){
+                this.rotAxeEarthX=0
+                this.rotAxeEarthY=0
+                this.rotAxeEarthZ=0
+            },
 
-            randomAsteroPlaneto:function (){
-                this.rotY_3PG = (Math.random() * (max - min) + min)/10;
+            stopRotJupiter:function (){
+                this.rotAxeJupiterX=0
+                this.rotAxeJupiterY=0
+                this.rotAxeJupiterZ=0
             },
-            randomSaturne:function (){
-                this.rotY_2PG = (Math.random() * (max - min) + min)/10;
-            },
-            randomMars:function (){
-                this.rotY_1PG = (Math.random() * (max - min) + min)/10;
-            },
-            changerAxeParticle:function (){
 
-                if(options.stateParticle=="x")
+            stopRotAsteroPlaneto:function (){
+                this.rotAxeAsteroPlanetoX=0
+                this.rotAxeAsteroPlanetoY=0
+                this.rotAxeAsteroPlanetoZ=0
+            },
+            changerAxeParticle:function (){//fonction qui permet de changer l'axe des particules
+                if(this.stateParticle=="x")
                     this.stateParticle="y"
                 else
                     this.stateParticle="x"
             },
-
-
     };
-        options.stopRotJupiter()
-        //on cree un folder pour la rotation
-        let marsDeplacementFolder = marsGui.addFolder("Mars")
-        setupCommonGui(marsDeplacementFolder,"Mars")
-        let marsRotFolder=marsGui.addFolder("Rotation")
-        setupRotFolder(marsRotFolder,"Mars")
+        options.stopRotJupiter()// on met la rotation de jupiter a 0
 
-        let saturnDeplacementFolder = saturneGui.addFolder("Saturne");
+        //Gui MARS
+        let marsDeplacementFolder = marsGui.addFolder("Mars")//creation folder pour la speed
+        setupCommonGui(marsDeplacementFolder,"Mars")// appel de la fonction qui va tout ajouter au folder concernant les deplacement
+        let marsRotFolder=marsGui.addFolder("Rotation") //creation folder pour la rotation
+        setupRotFolder(marsRotFolder,"Mars")//appel de la fonction qui va tout ajouter au folder concernant les rotations
+
+        let saturnDeplacementFolder = saturneGui.addFolder("Saturne");//pareil que mars
         setupCommonGui(saturnDeplacementFolder,"Saturne")
         let saturnRotFolder=saturneGui.addFolder("Rotation")
         setupRotFolder(saturnRotFolder,"Saturne")
 
-        let jupiterDeplacementFolder=jupiterGui.addFolder("Jupiter")
+        let jupiterDeplacementFolder=jupiterGui.addFolder("Jupiter")//pareil que mars pour le debut
         setupCommonGui(jupiterDeplacementFolder,"Jupiter")
         let jupiterRotFolder=jupiterGui.addFolder("Rotation")
         setupRotFolder(jupiterRotFolder,"Jupiter")
-        let moonFolder=jupiterGui.addFolder("Lunes")
-        moonFolder.add(options,"rotYEnceladus",-0.1,0.1).name("Enceladus Speed").listen()
+        let moonFolder=jupiterGui.addFolder("Lunes") // apres on ajoute un folder special lune
+        moonFolder.add(options,"rotYEnceladus",-0.1,0.1).name("Enceladus Speed").listen() //rotation des lunes
         moonFolder.add(options,"rotYEuropa",-0.1,0.1).name("Europa Speed").listen()
-        moonFolder.add(options,"randomEnceladus")
+        moonFolder.add(options,"randomEnceladus") // suite de fonction qui vont concerner les lunes (stop/random dans le gui)
         moonFolder.add(options,"randomEuropa")
         moonFolder.add(options,"stopEnceladus")
         moonFolder.add(options,"stopEuropa")
 
-        let earthDeplacementFolder=earthGui.addFolder("Earth")
+        let earthDeplacementFolder=earthGui.addFolder("Earth")//pareil que pour mars
         setupCommonGui(earthDeplacementFolder,"Earth")
         let earthRotFolder=earthGui.addFolder("Rotation")
         setupRotFolder(earthRotFolder,"Earth")
 
 
-        let asteroPlanetoDeplacementFolder = asteroPlanetoGui.addFolder("AsteroPlaneto");
+        let asteroPlanetoDeplacementFolder = asteroPlanetoGui.addFolder("AsteroPlaneto"); //pareil que pour mars
         setupCommonGui(asteroPlanetoDeplacementFolder,"AsteroPlaneto")
         let asteroPlanetoRotFolder=asteroPlanetoGui.addFolder("Rotation")
         setupRotFolder(asteroPlanetoRotFolder,"AsteroPlaneto")
 
-        let sunDeplacementMarsFolder=sunGui.addFolder("Mars")
+        let sunDeplacementMarsFolder=sunGui.addFolder("Mars") //Pour celui la on ajoute TOUS les gui a la suite enfaite le SUN=>ADMIN depuis le soleil on peut tout gerer
         setupCommonGui(sunDeplacementMarsFolder,"Mars")
         let sunRotMarsFolder=sunDeplacementMarsFolder.addFolder("Rotation")
         setupRotFolder(sunRotMarsFolder,"Mars")
@@ -883,20 +827,10 @@
         let sunRotEarthFolder=sunDeplacementEarthFolder.addFolder("Rotation")
         setupRotFolder(sunRotEarthFolder,"Earth")
 
-        let sunOtherFolder=sunGui.addFolder("Other")
+        let sunOtherFolder=sunGui.addFolder("Other") // a la fin il y a un special folder concernant la metorite ou les particules
         setupCommonGui(sunOtherFolder,"Sun");
-        //options.stateParticle="x"
-        //setupCommonGui(asteroPlanetoRotationFolder)
-       /* marsGui.addFolder(rotationFolder)
-        saturneGui.addFolder(rotationFolder)
-        asteroPlanetoGui.addFolder(rotationFolder)*/
 
-        //sun.closed=true;
-        //guiSun.constructor.toggleHide()
-        /*planetLookAt.add(options,"Saturne").listen();
-        planetLookAt.add(options,"Mars").listen();
-        planetLookAt.add(options,"JeSaisPas").listen();
-        planetLookAt.add(options,"Sun").listen();*/
+        //on hide tous les gui sauf celui du soleil
         marsGui.domElement.hidden=true;
         saturneGui.domElement.hidden=true;
         asteroPlanetoGui.domElement.hidden=true;
@@ -905,40 +839,43 @@
 
 
     }
-    function setupCommonGui(folder,nom){
-        if(nom=="Mars") {
-            folder.add(options,"rotY_1PG",-0.1,0.1).name("Mars Speed").listen()
+    function setupCommonGui(folder,nom){ // vous aurez remarquer qu'il y a un string au lancement des fonction c'est pour savoir quelle planete on est
+        if(nom=="Mars") { // si on est mars
+            folder.add(options,"rotY_1PG",-0.1,0.1).name("Mars Speed").listen() // on add au folder un slider qui modifie la vitesse
             folder.add(options, "stopMars"); //bouton pour stop la rotation
             folder.add(options, "randomMars"); //bouton pour une vitesse de rotation random
         }
         else if(nom=="Saturne"){
-            folder.add(options,"rotY_2PG",-0.1,0.1).name("Saturne Speed").listen()
+            folder.add(options,"rotY_2PG",-0.1,0.1).name("Saturne Speed").listen() // on add au folder un slider qui modifie la vitesse
             folder.add(options, "stopSaturne"); //bouton pour stop la rotation
             folder.add(options, "randomSaturne"); //bouton pour une vitesse de rotation random
         }
         else if(nom=="AsteroPlaneto"){
-            folder.add(options,"rotY_3PG",-0.1,0.1).name("Astero Speed").listen()
+            folder.add(options,"rotY_3PG",-0.1,0.1).name("Astero Speed").listen() // on add au folder un slider qui modifie la vitesse
             folder.add(options, "stopAsteroPlaneto"); //bouton pour stop la rotation
             folder.add(options, "randomAsteroPlaneto"); //bouton pour une vitesse de rotation random
         }
         else if(nom=="Jupiter"){
-            folder.add(options,"rotY_4PG",-0.1,0.1).name("Jupiter Speed").listen()
+            folder.add(options,"rotY_4PG",-0.1,0.1).name("Jupiter Speed").listen() // on add au folder un slider qui modifie la vitesse
             folder.add(options, "stopJupiter"); //bouton pour stop la rotation
             folder.add(options, "randomJupiter"); //bouton pour une vitesse de rotation random
         }
         else if(nom=="Earth"){
-            folder.add(options,"rotY_5PG",-0.1,0.1).name("Earth Speed").listen()
+            folder.add(options,"rotY_5PG",-0.1,0.1).name("Earth Speed").listen() // on add au folder un slider qui modifie la vitesse
             folder.add(options, "stopEarth"); //bouton pour stop la rotation
             folder.add(options, "randomEarth"); //bouton pour une vitesse de rotation random
         }
-        else{
-            folder.add(options,"particleSpeed",-1.0,1.0).name("Vitesse particules").listen()
-            folder.add(options,"changerAxeParticle")
-            folder.add(options,"meteoriteSpeed",0.0,1.0)?.name("Vitesse Meteorite").listen()
+        else{ // si on est le soleil
+            folder.add(options,"particleSpeed",-1.0,1.0).name("Vitesse particules").listen() // on ajoute slider speed particle
+            folder.add(options,"changerAxeParticle") // ceci c'est pour changer l'axe des particules
+            folder.add(options,"meteoriteSpeed",0.0,1.0).name("Vitesse Meteorite").listen() // slider pour la vitesse meteorite
+            folder.add(options,"randomALL") // bouton random all
+            folder.add(options,"stopALL")//bouton stop all
+
 
         }
     }
-    function setupRotFolder(folder,nom){
+    function setupRotFolder(folder,nom){ // pour les rotation (le soleil n'a pas de rotation ca sert a pas grand chose)
         if(nom=="Mars") {
             folder.add(options,"rotAxeMarsX",-0.1,0.1).name("Mars RotX").listen()
             folder.add(options,"rotAxeMarsY",-0.1,0.1).name("Mars RotY").listen()
@@ -946,18 +883,19 @@
             folder.add(options,"stopRotMars")
             folder.add(options,"randomRotMars")
         }
-        else if(nom=="Saturne"){
-            folder.add(options,"rotAxeSaturneX",-0.1,0.1).name("Saturne RotX").listen()
+        else if(nom=="Saturne"){ //Prenons l'exemple de Saturne
+            folder.add(options,"rotAxeSaturneX",-0.1,0.1).name("Saturne RotX").listen() // on fait 3 slider pour la rotation XYZ
             folder.add(options,"rotAxeSaturneY",-0.1,0.1).name("Saturne RotY").listen()
             folder.add(options,"rotAxeSaturneZ",-0.1,0.1).name("Saturne RotZ").listen()
-            folder.add(options,"rotAxeAnneauSaturneX1",-0.1,0.1).name("Anneau 1 rotX").listen()
+
+            folder.add(options,"rotAxeAnneauSaturneX1",-0.1,0.1).name("Anneau 1 rotX").listen() // ensuite on a 6 rotation 3 par anneaux XYZ
             folder.add(options,"rotAxeAnneauSaturneY1",-0.1,0.1).name("Anneau 1 rotY").listen()
             folder.add(options,"rotAxeAnneauSaturneZ1",-0.1,0.1).name("Anneau 1 rotZ").listen()
             folder.add(options,"rotAxeAnneauSaturneX2",-0.1,0.1).name("Anneau 2 rotX").listen()
             folder.add(options,"rotAxeAnneauSaturneY2",-0.1,0.1).name("Anneau 2 rotY").listen()
             folder.add(options,"rotAxeAnneauSaturneZ2",-0.1,0.1).name("Anneau 2 rotZ").listen()
-            folder.add(options,"stopRotSaturne")
-            folder.add(options,"randomRotSaturne")
+            folder.add(options,"stopRotSaturne")// pour stoper la rotation de saturne
+            folder.add(options,"randomRotSaturne")//pour random la rotation de saturne
 
 
         }
@@ -985,13 +923,12 @@
         }
     }
 
-        function mdrlol(mouse){
-        //console.log(mouse)
-           // console.log(meshSun.position)
-            let boundingBox = new THREE.Box3().setFromObject(meshSun)
-            if(boundingBox.containsPoint(mouse.point)) {
+        function whichPlanet(mouse){
 
-                marsGui.domElement.hidden=true;
+            let boundingBox = new THREE.Box3().setFromObject(meshSun) // cration d'une box qui va entoure la sphere
+            if(boundingBox.containsPoint(mouse.point)) { // si on est dans la box
+
+                marsGui.domElement.hidden=true; // on desaffiche les autres gui et affiche celui du soleil
                 saturneGui.domElement.hidden=true;
                 asteroPlanetoGui.domElement.hidden=true;
                 sunGui.domElement.hidden=false
@@ -1002,24 +939,20 @@
 
             }
 
-             boundingBox = new THREE.Box3().setFromObject(firstPlanetGroup.children[0])
-                    if(boundingBox.containsPoint(mouse.point)){
+             boundingBox = new THREE.Box3().setFromObject(marsGroup.children[0]) //creation d'une box qui entoure la planete mars
+                    if(boundingBox.containsPoint(mouse.point)){ // si on est dedans on affiche le gui mars et desaffiche les autres
                         marsGui.domElement.hidden=false;
                         saturneGui.domElement.hidden=true;
                         asteroPlanetoGui.domElement.hidden=true;
                         sunGui.domElement.hidden=true
                         jupiterGui.domElement.hidden=true;
                         earthGui.domElement.hidden=true;
-                        camera.lookAt(firstPlanetGroup.children[0].position)
                         return ;
 
             }
 
-            boundingBox = new THREE.Box3().setFromObject(secondPlanetGroup.children[0])
-            //console.log(size)
-
-
-                    if(boundingBox.containsPoint(mouse.point)) {
+            boundingBox = new THREE.Box3().setFromObject(saturneGroup.children[0]) //creation d'une box qui entoure la planete SAturne
+              if(boundingBox.containsPoint(mouse.point)) { // si on est dedans on affiche le gui saturne et desaffiche les autres
                         marsGui.domElement.hidden=true;
                         saturneGui.domElement.hidden=false;
                         asteroPlanetoGui.domElement.hidden=true;
@@ -1029,13 +962,9 @@
                         return;
                     }
 
-            boundingBox = new THREE.Box3().setFromObject(thirdPlanetGroup.children[0])
+            boundingBox = new THREE.Box3().setFromObject(asteroPlanetoGroup.children[0]) //creation d'une box qui entoure la planete Astero
 
-
-            //console.log(size)
-
-            //scene.add(new THREE.BoxHelper(thirdPlanetGroup.children[0]))
-            if(boundingBox.containsPoint(mouse.point)) {
+            if(boundingBox.containsPoint(mouse.point)) { // si on est dedans on affiche le gui astero et desaffiche les autres
                 marsGui.domElement.hidden=true;
                 saturneGui.domElement.hidden=true;
                 asteroPlanetoGui.domElement.hidden=false;
@@ -1044,11 +973,9 @@
                 earthGui.domElement.hidden=true;
                 return;
             }
-            boundingBox = new THREE.Box3().setFromObject(jupiterGroup.children[0])
-            //scene.add(new THREE.BoxHelper(jupiterGroup.children[0]))
-            //console.log(size)
+            boundingBox = new THREE.Box3().setFromObject(jupiterGroup.children[0]) //creation d'une box qui entoure la planete Jupiter
 
-            if(boundingBox.containsPoint(mouse.point)) {
+            if(boundingBox.containsPoint(mouse.point)) { // si on est dedans on affiche le gui jupiter et desaffiche les autres
                 marsGui.domElement.hidden=true;
                 saturneGui.domElement.hidden=true;
                 asteroPlanetoGui.domElement.hidden=true;
@@ -1057,15 +984,9 @@
                 earthGui.domElement.hidden=true;
                 return;
             }
-            boundingBox = new THREE.Box3().setFromObject(earthGroupe.children[0])
-            //console.log(size)
-            //console.log(boundingBox)
-           // console.log(mouse.point)
-            //let temp=new THREE.BoxHelper(earthGroupe.children[0])
-            //scene.add(temp)
-           // temp.domElement.hidden=true
-            //scene.add(new THREE.BoxHelper(earthGroupe.children[0]))
-            if(boundingBox.containsPoint(mouse.point)) {
+            boundingBox = new THREE.Box3().setFromObject(earthGroupe.children[0]) //creation d'une box qui entoure la planete Earth
+
+            if(boundingBox.containsPoint(mouse.point)) { // si on est dedans on affiche le gui earth et desaffiche les autres
 
                 marsGui.domElement.hidden=true;
                 saturneGui.domElement.hidden=true;
@@ -1076,34 +997,29 @@
                 return;
             }
         }
-    function onDocumentMouseDown(event){
-        //console.log("test")
-        let mouse=new THREE.Vector3();
-        let rayCaster = new THREE.Raycaster();
-        event.preventDefault();
-        //camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-        //let rect = this.renderer.domElement.getBoundingClientRect();
-        var rect = renderer.domElement.getBoundingClientRect();
-        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-        rayCaster.setFromCamera(mouse, camera);
-       // console.log(mouse)
-        let intersects=new Array();
-        let temp= new Array()
+    function onDocumentMouseDown(event){ // lancement de cette fonction lors d'un click
 
-        temp.push(firstPlanetGroup.children)
-        temp.push(secondPlanetGroup.children)
+        let mouse=new THREE.Vector3(); //creation d'un vector 3
+        let rayCaster = new THREE.Raycaster(); //creation d'un raycast
+        event.preventDefault();
+
+        var rect = renderer.domElement.getBoundingClientRect(); // on recupere la taille de fenetre
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1; // on recupere la position de la souris en fonction de la fenetre
+        rayCaster.setFromCamera(mouse, camera); // on init de raycaster de la camera vers la souris
+        let intersects=new Array(); // cration d'un array intersects qui va contenir les intersections du raycast
+        let temp= new Array()// creation d'un tableau temporaire qui va contenir tous les objets de la scene car enfaite si on fait un rayCast scene cela ne va pas marcher car enfaite ce sont les groupe qui sont dans la scene et pas les objets en eux meme
+
+        temp.push(marsGroup.children) // on ajoute tous les objets de tous les groupes au tableau temporaire
+        temp.push(saturneGroup.children)
         temp.push(earthGroupe.children)
         temp.push(jupiterGroup.children)
-        temp.push(thirdPlanetGroup.children)
+        temp.push(asteroPlanetoGroup.children)
         temp.push(scene.children)//scene .push en dernier sinon il va d'abord detecter sky box et apres les autres groups
-       // console.log(temp)
-        for(let i=0;i<6;i++) {
-            intersects = intersects.concat(rayCaster.intersectObjects(temp[i], false));
-            console.log(temp[i])
+        for(let i=0;i<temp.length;i++) {
+            intersects = intersects.concat(rayCaster.intersectObjects(temp[i], false)); // on raycast il va detecter tous les points d'intersections entre la camera et la souris
         }
-        console.log(intersects)
-        mdrlol(intersects[0])
+        whichPlanet(intersects[0]) // on regarde qui est la premiere intersections
 
 
 
@@ -1111,19 +1027,19 @@
 
     }
 
-    // fonction pour loop
+    // fonction qui va  loop
     function animate(t) {
-
+        //ce for va parcourir la list des comet pour voir si il y en a une qui sort
         for (let i = 0; i < cometGroup.length; i++) {
-            if (options.stateParticle == "x") {
-                if (cometGroup[i].position.x > 550) {
-                    cometGroup[i].position.x = -500;
-                } else if (cometGroup[i].position.x < -550) {
+            if (options.stateParticle == "x") { // si on fait sur l'axe x
+                if (cometGroup[i].position.x > 550) { // et que ca depasse
+                    cometGroup[i].position.x = -500; // on replace bien la comet
+                } else if (cometGroup[i].position.x < -550) { //sinon
                     cometGroup[i].position.x = 500;
                 } else {
-                    cometGroup[i].position.x += options.particleSpeed
+                    cometGroup[i].position.x += options.particleSpeed // on ajoute a la position de x la valeur du slider particlespeed
                 }
-            } else {
+            } else { // sin on a y on fait pareil que pour x mais dans l'autre sens
 
                 if (cometGroup[i].position.z > 550) {
                     cometGroup[i].position.z = -500;
@@ -1137,23 +1053,23 @@
 
 
 
-        secondPlanetGroup.children[2].rotation.x += options.rotAxeAnneauSaturneX1
-        secondPlanetGroup.children[2].rotation.y += options.rotAxeAnneauSaturneY1
-        secondPlanetGroup.children[2].rotation.z += options.rotAxeAnneauSaturneZ1
-        secondPlanetGroup.children[0].rotation.x += options.rotAxeAnneauSaturneX2
-        secondPlanetGroup.children[0].rotation.y += options.rotAxeAnneauSaturneY2
-        secondPlanetGroup.children[0].rotation.z += options.rotAxeAnneauSaturneZ2
-        secondPlanetGroup.children[1].rotation.x += options.rotAxeSaturneX
-        secondPlanetGroup.children[1].rotation.y += options.rotAxeSaturneY
-        secondPlanetGroup.children[1].rotation.z += options.rotAxeSaturneZ
+        saturneGroup.children[2].rotation.x += options.rotAxeAnneauSaturneX1 // on ajoute a toutes les valeurs des planetes ou lunes des planetes la valeurs des sliders pour qu'elle puisse bouger en fonction de l'utilisateur
+        saturneGroup.children[2].rotation.y += options.rotAxeAnneauSaturneY1
+        saturneGroup.children[2].rotation.z += options.rotAxeAnneauSaturneZ1
+        saturneGroup.children[0].rotation.x += options.rotAxeAnneauSaturneX2
+        saturneGroup.children[0].rotation.y += options.rotAxeAnneauSaturneY2
+        saturneGroup.children[0].rotation.z += options.rotAxeAnneauSaturneZ2
+        saturneGroup.children[1].rotation.x += options.rotAxeSaturneX
+        saturneGroup.children[1].rotation.y += options.rotAxeSaturneY
+        saturneGroup.children[1].rotation.z += options.rotAxeSaturneZ
 
-        firstPlanetGroup.children[0].rotation.x += options.rotAxeMarsX
-        firstPlanetGroup.children[0].rotation.y += options.rotAxeMarsY
-        firstPlanetGroup.children[0].rotation.z += options.rotAxeMarsZ
+        marsGroup.children[0].rotation.x += options.rotAxeMarsX
+        marsGroup.children[0].rotation.y += options.rotAxeMarsY
+        marsGroup.children[0].rotation.z += options.rotAxeMarsZ
 
-        thirdPlanetGroup.children[0].rotation.x += options.rotAxeAsteroPlanetoX
-        thirdPlanetGroup.children[0].rotation.y += options.rotAxeAsteroPlanetoY
-        thirdPlanetGroup.children[0].rotation.z += options.rotAxeAsteroPlanetoZ
+        asteroPlanetoGroup.children[0].rotation.x += options.rotAxeAsteroPlanetoX
+        asteroPlanetoGroup.children[0].rotation.y += options.rotAxeAsteroPlanetoY
+        asteroPlanetoGroup.children[0].rotation.z += options.rotAxeAsteroPlanetoZ
 
         jupiterGroup.children[0].rotation.x += options.rotAxeJupiterX
         jupiterGroup.children[0].rotation.y += options.rotAxeJupiterY
@@ -1163,88 +1079,58 @@
         pivotJupiterEuropa.rotation.x += options.rotYEuropa
         pivotJupiterEuropa.rotation.y += options.rotYEuropa
 
-        firstPlanetGroup.rotation.y += options.rotY_1PG;
-        secondPlanetGroup.rotation.y += options.rotY_2PG;
-        thirdPlanetGroup.rotation.y += options.rotY_3PG;
+        marsGroup.rotation.y += options.rotY_1PG;
+        saturneGroup.rotation.y += options.rotY_2PG;
+        asteroPlanetoGroup.rotation.y += options.rotY_3PG;
         jupiterGroup.rotation.y += options.rotY_4PG
         //jupiterGroup.rotation.y+=0.01
 
-        if(earthGroupe!=undefined){
+        if(earthGroupe!=undefined){ // on fait pareil pour la terre mais on verifie qu'elle n'est pas undifined car c'est possible des fois je ne sais pas pourquoi...
             earthGroupe.rotation.y+=options.rotY_5PG;
             earthGroupe.children[0].rotation.x += options.rotAxeEarthX
             earthGroupe.children[0].rotation.y += options.rotAxeEarthY
             earthGroupe.children[0].rotation.z += options.rotAxeEarthZ
         }
 
-        pivotPoint.rotation.y = t / 3000;
+        pivotPoint.rotation.y = t / 3000; // au augmente le pivot points en fonction de T
 
-        date = new Date()
+        date = new Date() //creation d'une date qui va se reset a chaque fois c'est fait expres pour notre shader
 
-        uniforms.u_time.value=date.getMilliseconds()
+        uniformsMeteorite.u_time.value=date.getMilliseconds() // on met u_time de la variable uniform egal a la valeur de la date en milliseconds
         //earthUniforms.u_time.value=date.getMilliseconds()
 
-        if(val>50){
-            incremente=false
+        if(val>50){ // si notre valeur est superieur a 50
+            incremente=false // on dis que incremente =false pour que mette on decremente la valeur
         }
         else if(val<-50){
             incremente=true
         }
 
         if(incremente==true) {
-            val+=0.1
+            val+=0.1 // on incremente ou decremente en fonction
         }
         else{
             val-=0.1
         }
-        earthUniforms.u_time.value = val
+        earthUniforms.u_time.value = val // et on utlise la valeur ici
         sunUniforms.u_time.value+=0.005;
-        if (meteorite != undefined) {
-            if (meteorite.position.x > 550) {
-                meteorite.position.x = -500
-                meteorite.position.y = Math.random() * (100 - 100) + 100
+        if (meteorite != undefined) { //si la meteorite n'est pas indefinie
+            if (meteorite.position.x > 550) { // et si elle depassse x=550 alors on la replace
+                meteorite.position.x = -500 // la bonne valeur de x
+                meteorite.position.y = Math.random() * (100 - 100) + 100 // et une valeur random entre un min et max
                 meteorite.position.z = Math.random() * (300 - 300) + 300
-            } else if (meteorite.position.x < -550) {
+            } else if (meteorite.position.x < -550) { // si on depasse mais de l'autre coté
                 meteorite.position.x = 500
-                meteorite.position.y = Math.random() * (100 - 100) + 100
+                meteorite.position.y = Math.random() * (100 - 100) + 100 //pareil
                 meteorite.position.z = Math.random() * (300 - 300) + 300
             }
-            meteorite.position.x += options.meteoriteSpeed;
+            meteorite.position.x += options.meteoriteSpeed; // meteorite
         }
 
-        //donne au var une valeur entre -1 et 1
-        /*posX=Math.cos(alpha);
-        posY=Math.sin(alpha);
-        posY2=Math.cos(alpha2);
-        posX2=Math.sin(alpha2);
-        posY3=Math.cos(alpha3);
-        posX3=Math.sin(alpha3);*/
 
-        //on incremente alpha ce qui va nous permettre d'avoir une autre valeur pour sin et cos
-        /* alpha+=0.005;
-        alpha2+=0.01;
-        alpha3+=0.005;*/
-
-        //on augmente la valeur obtenue pour avoir un cercle plus grand
-        /* posX*=6; //cette valeur vaut 6 et l'autre vaut 10 pour eviter que les boules soit sur le meme axe circulaire
-        posY*=6;
-        posX2*=10;
-        posY2*=10;
-        posX3*=15;
-        posY3*=15;*/
-
-        //on donne ensuite au sphere la position
-        /*sphere.position.x=posX+cube.position.x;
-        sphere.position.y=posY+cube.position.y;
-        sphere2.position.x=posX2+cube.position.x;
-        sphere2.position.y=posY2+cube.position.y;
-        cube.position.x=posX3;
-        cube.position.y=posY3;*/
-
-        //pour que la camera suivent l'objet
-        // camera.lookAt(cube.position.x,cube.position.y,5);
-        controls.update();
+        controls.update(); // on update le controls
         requestAnimationFrame(animate);
-        renderer.render(scene, camera);
+        renderer.render(scene, camera); // on rerender
     }
 
     function onWindowResize() { //pour la size de la fenetre
@@ -1256,8 +1142,8 @@
 
     window.addEventListener('resize', onWindowResize, false);
 
-    init();
-    animate();
+    init(); // on init
+    animate(); // et on animate
 
 </script>
 </body>

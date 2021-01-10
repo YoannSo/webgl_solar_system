@@ -19,9 +19,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3cd24eb7-e8fb-480f-b708-32b7cc2298ba" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../v5/exercice.html" beforeDir="false" afterPath="$PROJECT_DIR$/../v5/exercice.html" afterDir="false" />
+    <list default="true" id="9eef485f-5dfb-474e-bf55-a7be8c709213" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../v4/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../v4/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exercice.html" beforeDir="false" afterPath="$PROJECT_DIR$/exercice.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +34,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectId" id="1msg0c6go6ggUmUO2hMzw9f7Xjz" />
+  <component name="ProjectId" id="1msybBLKB8fVayvtkRC4UNQEvxB" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -43,20 +43,18 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../v5" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="3cd24eb7-e8fb-480f-b708-32b7cc2298ba" name="Default Changelist" comment="" />
-      <created>1610287490504</created>
+      <changelist id="9eef485f-5dfb-474e-bf55-a7be8c709213" name="Default Changelist" comment="" />
+      <created>1610296661317</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1610287490504</updated>
-      <workItem from="1610287491530" duration="2327000" />
-      <workItem from="1610291252157" duration="2880000" />
-      <workItem from="1610296651219" duration="740000" />
+      <updated>1610296661317</updated>
+      <workItem from="1610296662390" duration="9675000" />
     </task>
     <servers />
   </component>
@@ -73,23 +71,5 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="922" y="509" key="FileChooserDialogImpl" timestamp="1610296659971">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="922" y="509" key="FileChooserDialogImpl/0.0.2560.1400@0.0.2560.1400" timestamp="1610296659971" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/exercice.html</url>
-          <line>229</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
