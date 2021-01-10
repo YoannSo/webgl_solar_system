@@ -98,33 +98,25 @@ precision highp float;
         }
     </script>
     <script type="module">
-        import * as $ from 'https://code.jquery.com/jquery-3.4.1.min.js'
-        export default window.jQuery.noConflict(true)
         import { OrbitControls } from 'https://unpkg.com/three@0.121.1/examples/jsm/controls/OrbitControls.js';
         import { OBJLoader } from 'https://unpkg.com/three@0.121.1/examples/jsm/loaders/OBJLoader.js';
     let particleSpeed,stateParticle,posPlanets,cometGroup,canvas,sun,geometry,geometry2,mesh2,mesh,secondPlanetGroup,firstPlanetGroup,axesHelper,firstPlanet,firstPlanetMaterial,secondPlanet,meshSun,sunMaterial,camera,skybox,skyboxMaterial,texture1,mat,test, scene, texture,renderer,options,planeMaterial,geometryBox,light2,geometrySphere,geometryPlane,plane,material,sphere,sphere2,posX,posX2,posY,posY2,alpha,light,cube,gui,folder1,controls,alpha2,alpha3,posX3,posY3, ring1, ring2, ringMaterial, thirdPlanet, thirdPlanetGroup, pivotPoint, sunTexture,thirdPlanetTexture, thirdPlanetMaterial, secondPlanetTexture, secondPlanetMaterial, firstPlanetTexture;//init de toutes les var
     let comet;
+    let saturneGroup,saturneTexture,saturneMesh,saturneMaterial,saturneGeo,ringMesh1,ringMesh2;
+    let marsGroup,marsTexture,marsMesh,marsMaterial,marsGeo;
     let date,earthDate;
+    let marsGui,saturneGui,asteroPlanetoGui,sunGui,jupiterGui,earthGui;
     let meteorite,meteoriteLoader,uniformsMeteorite,meteoriteMaterial;
+    let earthMaterial,earth, earthLoader,uniforms,earthUniforms,val,incremente,earthGroupe;
     let jupiterTexture,jupiterMesh,jupiterGroup,jupiterGeometry,jupiterMaterial,pivotJupiterEnceladus,pivotJupiterEuropa;
         let enceladusTexture,enceladusMesh,enceladusGroup,enceladusGeometry,enceladusMaterial;
         let europaTexture,europaMesh,europaGroup,europaGeometry,europaMaterial;
-
-        let marsGui,saturneGui,asteroPlanetoGui,sunGui,jupiterGui,earthGui;
-      let rotAxeSaturneX,
-          rotAxeSaturneY,
-          rotAxeSaturneZ,
-          rotAxeAnneauSaturneX1,
-          rotAxeAnneauSaturneY1,
-          rotAxeAnneauSaturneZ1,
-          rotAxeAnneauSaturneX2,
-          rotAxeAnneauSaturneY2,
-          rotAxeAnneauSaturneZ2;
+    let asteroPlanetoGeo,asteroPlanetoTexture,asteroPlanetoMesh,asteroPlanetoMaterial,asteroPlanetoGroup;
     //colors
     var orange = 0xff8000;
     var yellow = 0xF7B801;
     let white=0xffffff;
-    let earthMaterial,earth, earthLoader,uniforms,earthUniforms,val,incremente,earthGroupe;
+
 
     function init() {
         // initialisation scene
@@ -151,39 +143,39 @@ precision highp float;
         scene.add(meshSun);
 
         // ******** FIRST PLANET ********
-        firstPlanet=new THREE.SphereGeometry(4,50,50);
-        firstPlanetTexture = new THREE.TextureLoader().load("textures/firstPlanet.png");
-        firstPlanetMaterial = new THREE.MeshBasicMaterial( {map:firstPlanetTexture} );
-        firstPlanet= new THREE.Mesh(firstPlanet, firstPlanetMaterial );
-        firstPlanet.position.x=50;
-        firstPlanet.rotation.x=0.5;
-        firstPlanetGroup=new THREE.Group();
-        firstPlanetGroup.add(firstPlanet);
-        scene.add(firstPlanetGroup);
+        marsGeo=new THREE.SphereGeometry(4,50,50);
+        marsTexture = new THREE.TextureLoader().load("textures/firstPlanet.png");
+        marsTexture = new THREE.MeshBasicMaterial( {map:firstPlanetTexture} );
+        marsMesh= new THREE.Mesh(marsGeo, marsTexture );
+        marsMesh.position.x=50;
+        marsMesh.rotation.x=0.5;
+        marsGroup=new THREE.Group();
+        marsGroup.add(marsMesh);
+        scene.add(marsGroup);
 
         // ******** SECOND PLANET (2 rings) ********
-        secondPlanet = new THREE.SphereGeometry(8,50,50);
-        secondPlanetTexture = new THREE.TextureLoader().load("textures/saturneTexture.jpg");
-        secondPlanetMaterial = new THREE.MeshBasicMaterial( {map:secondPlanetTexture} );
-        secondPlanet = new THREE.Mesh(secondPlanet, secondPlanetMaterial);
+        saturneGeo = new THREE.SphereGeometry(8,50,50);
+        saturneTexture = new THREE.TextureLoader().load("textures/saturneTexture.jpg");
+        saturneMaterial = new THREE.MeshBasicMaterial( {map:secondPlanetTexture} );
+        saturneMesh = new THREE.Mesh(secondPlanet, secondPlanetMaterial);
 
         ring1 = new THREE.RingGeometry( 10, 11, 30);
         ring2 = new THREE.RingGeometry( 12, 13, 30);
-        secondPlanet.position.x = -100;
-        secondPlanet.rotation.x = 0.5;
+        saturneMesh.position.x = -100;
+        saturneMesh.rotation.x = 0.5;
 
         ringMaterial = new THREE.MeshBasicMaterial( { color: yellow, side: THREE.DoubleSide } );
-        mesh = new THREE.Mesh( ring1, ringMaterial );
-        mesh2 = new THREE.Mesh(ring2,ringMaterial);
-        mesh2.position.x = secondPlanet.position.x;
-        mesh2.rotation.x = 0.5;
-        mesh.position.x = secondPlanet.position.x;
-        mesh.rotation.x = 0.5;
-        secondPlanetGroup = new THREE.Group();
-        secondPlanetGroup.add(mesh);
-        secondPlanetGroup.add(secondPlanet);
-        secondPlanetGroup.add(mesh2);
-        scene.add(secondPlanetGroup);
+        ringMesh1 = new THREE.Mesh( ring1, ringMaterial );
+        ringMesh2 = new THREE.Mesh(ring2,ringMaterial);
+        ringMesh2.position.x = secondPlanet.position.x;
+        ringMesh2.rotation.x = 0.5;
+        ringMesh1.position.x = secondPlanet.position.x;
+        ringMesh1.rotation.x = 0.5;
+        saturneGroup = new THREE.Group();
+        saturneGroup.add(ringMesh1);
+        saturneGroup.add(secondPlanet);
+        saturneGroup.add(ringMesh2);
+        scene.add(saturneGroup);
 
         //jupiter
         jupiterGeometry = new THREE.SphereGeometry(8,50,50);
@@ -221,14 +213,14 @@ precision highp float;
         posPlanets=new Array();// on doit faire un array car le problemes c'est que les groupes on comme Pos0
 
         // ******** THIRD PLANET (belt of asteroids) ********
-        thirdPlanet = new THREE.SphereGeometry(12,50,50);
-        thirdPlanetTexture = new THREE.TextureLoader().load("textures/asteroidPlanet.jpg")
-        thirdPlanetMaterial = new THREE.MeshBasicMaterial( {map:thirdPlanetTexture} );
-        thirdPlanet = new THREE.Mesh(thirdPlanet, thirdPlanetMaterial);
-        thirdPlanet.position.x = -200;
-        thirdPlanet.rotation.x = 0.2;
+        asteroPlanetoGeo = new THREE.SphereGeometry(12,50,50);
+        asteroPlanetoTexture = new THREE.TextureLoader().load("textures/asteroidPlanet.jpg")
+        asteroidMaterial = new THREE.MeshBasicMaterial( {map:thirdPlanetTexture} );
+        asteroidMesh = new THREE.Mesh(thirdPlanet, thirdPlanetMaterial);
+        asteroidMesh.position.x = -200;
+        asteroidMesh.rotation.x = 0.2;
 
-        thirdPlanetGroup = new THREE.Group();
+        asteroPlanetoGroup = new THREE.Group();
 
         //asteroids
         var asteroidMinHeight = -3;
@@ -236,7 +228,7 @@ precision highp float;
         var asteroidMaxRadius = 50;
 
         pivotPoint = new THREE.Object3D();
-        thirdPlanet.add(pivotPoint);
+        asteroPlanetoMesh.add(pivotPoint);
         
         for(var i = 0; i < 20; i++){  
             for(var j = 0; j < 20; j++){
@@ -398,8 +390,8 @@ precision highp float;
             return new THREE.LineLoop(circleGeometry, new THREE.LineBasicMaterial({ color: "gray" }));
         }
         //on rotateX la trajectoire de PI / 2 pour que elle soit a l'horizontale
-        console.log(jupiterMesh)
-        let firstPlanetTrajectory = createTrajectory(firstPlanet.position.x);
+
+        let firstPlanetTrajectory = createTrajectory(marsMesh.position.x);
         firstPlanetTrajectory.rotateX( Math.PI / 2 );
         firstPlanetGroup.add(firstPlanetTrajectory);
 
@@ -409,13 +401,13 @@ precision highp float;
 
 
 
-        let secondPlanetTrajectory = createTrajectory(secondPlanet.position.x);
+        let secondPlanetTrajectory = createTrajectory(saturneMesh.position.x);
         secondPlanetTrajectory.rotateX( Math.PI / 2 );
         secondPlanetGroup.add(secondPlanetTrajectory);
 
-        let thirdPlanetTrajectory = createTrajectory(thirdPlanet.position.x);
-        thirdPlanetTrajectory.rotateX( Math.PI / 2 );
-        thirdPlanetGroup.add(thirdPlanetTrajectory);
+        let asteroPlanetoTrajectory = createTrajectory(asteroPlanetoMesh.position.x);
+        asteroPlanetoTrajectory.rotateX( Math.PI / 2 );
+        thirdPlanetGroup.add(asteroPlanetoTrajectory);
 
 
         //********* a enlever ??? ***********
@@ -1020,11 +1012,11 @@ precision highp float;
         let intersects=new Array();
         let temp= new Array()
 
-        temp.push(firstPlanetGroup.children)
-        temp.push(secondPlanetGroup.children)
+        temp.push(marsGroup.children)
+        temp.push(saturneGroup.children)
         temp.push(earthGroupe.children)
         temp.push(jupiterGroup.children)
-        temp.push(thirdPlanetGroup.children)
+        temp.push(asteroPlanetoGroup.children)
         temp.push(scene.children)//scene .push en dernier sinon il va d'abord detecter sky box et apres les autres groups
        // console.log(temp)
         for(let i=0;i<6;i++) {
@@ -1066,23 +1058,23 @@ precision highp float;
 
 
 
-        secondPlanetGroup.children[2].rotation.x += options.rotAxeAnneauSaturneX1
-        secondPlanetGroup.children[2].rotation.y += options.rotAxeAnneauSaturneY1
-        secondPlanetGroup.children[2].rotation.z += options.rotAxeAnneauSaturneZ1
-        secondPlanetGroup.children[0].rotation.x += options.rotAxeAnneauSaturneX2
-        secondPlanetGroup.children[0].rotation.y += options.rotAxeAnneauSaturneY2
-        secondPlanetGroup.children[0].rotation.z += options.rotAxeAnneauSaturneZ2
-        secondPlanetGroup.children[1].rotation.x += options.rotAxeSaturneX
-        secondPlanetGroup.children[1].rotation.y += options.rotAxeSaturneY
-        secondPlanetGroup.children[1].rotation.z += options.rotAxeSaturneZ
+        saturneGroup.children[2].rotation.x += options.rotAxeAnneauSaturneX1
+        saturneGroup.children[2].rotation.y += options.rotAxeAnneauSaturneY1
+        saturneGroup.children[2].rotation.z += options.rotAxeAnneauSaturneZ1
+        saturneGroup.children[0].rotation.x += options.rotAxeAnneauSaturneX2
+        saturneGroup.children[0].rotation.y += options.rotAxeAnneauSaturneY2
+        saturneGroup.children[0].rotation.z += options.rotAxeAnneauSaturneZ2
+        saturneGroup.children[1].rotation.x += options.rotAxeSaturneX
+        saturneGroup.children[1].rotation.y += options.rotAxeSaturneY
+        saturneGroup.children[1].rotation.z += options.rotAxeSaturneZ
 
-        firstPlanetGroup.children[0].rotation.x += options.rotAxeMarsX
-        firstPlanetGroup.children[0].rotation.y += options.rotAxeMarsY
-        firstPlanetGroup.children[0].rotation.z += options.rotAxeMarsZ
+        marsGroup.children[0].rotation.x += options.rotAxeMarsX
+        marsGroup.children[0].rotation.y += options.rotAxeMarsY
+        marsGroup.children[0].rotation.z += options.rotAxeMarsZ
 
-        thirdPlanetGroup.children[0].rotation.x += options.rotAxeAsteroPlanetoX
-        thirdPlanetGroup.children[0].rotation.y += options.rotAxeAsteroPlanetoY
-        thirdPlanetGroup.children[0].rotation.z += options.rotAxeAsteroPlanetoZ
+        asteroPlanetoGroup.children[0].rotation.x += options.rotAxeAsteroPlanetoX
+        asteroPlanetoGroup.children[0].rotation.y += options.rotAxeAsteroPlanetoY
+        asteroPlanetoGroup.children[0].rotation.z += options.rotAxeAsteroPlanetoZ
 
         jupiterGroup.children[0].rotation.x += options.rotAxeJupiterX
         jupiterGroup.children[0].rotation.y += options.rotAxeJupiterY
@@ -1092,9 +1084,9 @@ precision highp float;
         pivotJupiterEuropa.rotation.x += options.rotYEuropa
         pivotJupiterEuropa.rotation.y += options.rotYEuropa
 
-        firstPlanetGroup.rotation.y += options.rotY_1PG;
-        secondPlanetGroup.rotation.y += options.rotY_2PG;
-        thirdPlanetGroup.rotation.y += options.rotY_3PG;
+        marsGroup.rotation.y += options.rotY_1PG;
+        saturneGroup.rotation.y += options.rotY_2PG;
+        asteroPlanetoGroup.rotation.y += options.rotY_3PG;
         jupiterGroup.rotation.y += options.rotY_4PG
         //jupiterGroup.rotation.y+=0.01
 
