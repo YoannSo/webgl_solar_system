@@ -190,7 +190,7 @@
         // ******** FIRST PLANET ********
         marsGeo=new THREE.SphereGeometry(4,50,50); //creation de la geometrie
         marsTexture = new THREE.TextureLoader().load("textures/firstPlanet.png"); //load de la texture
-        marsTexture = new THREE.MeshBasicMaterial( {map:marsTexture} ); //creation de la texture
+        marsTexture = new THREE.MeshPhongMaterial( {map:marsTexture} ); //creation de la texture
         marsMesh= new THREE.Mesh(marsGeo, marsTexture ); // creation du mesh
         marsMesh.position.x=50;
         marsMesh.rotation.x=0.5;
@@ -201,7 +201,7 @@
         // ******** SECOND PLANET (2 rings) ********
         saturneGeo = new THREE.SphereGeometry(8,50,50); //creation de la geometrie
         saturneTexture = new THREE.TextureLoader().load("textures/saturneTexture.jpg");//load de la texture
-        saturneMaterial = new THREE.MeshBasicMaterial( {map:saturneTexture} ); //creation de la texture
+        saturneMaterial = new THREE.MeshPhongMaterial( {map:saturneTexture} ); //creation de la texture
         saturneMesh = new THREE.Mesh(saturneGeo, saturneMaterial); // creation du mesh
 
         ring1 = new THREE.RingGeometry( 10, 11, 30); // on creer les 2 ring
@@ -210,7 +210,7 @@
         saturneMesh.position.x = -100;
         saturneMesh.rotation.x = 0.5;
 
-        ringMaterial = new THREE.MeshBasicMaterial( { color: yellow, side: THREE.DoubleSide } ); // on setup le material pour les ring
+        ringMaterial = new THREE.MeshPhongMaterial( { color: yellow, side: THREE.DoubleSide } ); // on setup le material pour les ring
         ringMesh1 = new THREE.Mesh( ring1, ringMaterial ); // mesh premier ring
         ringMesh2 = new THREE.Mesh(ring2,ringMaterial);//mesh deuxieme ring
         ringMesh2.position.x = saturneMesh.position.x; // on setup la position des ring
@@ -228,7 +228,7 @@
         //********* JUPITER ***********
         jupiterGeometry = new THREE.SphereGeometry(8,50,50); //creation geometry
         jupiterTexture = new THREE.TextureLoader().load("textures/jupiter.jfif"); //load texture
-        jupiterMaterial = new THREE.MeshBasicMaterial( {map:jupiterTexture} );//creation texture
+        jupiterMaterial = new THREE.MeshPhongMaterial( {map:jupiterTexture} );//creation texture
         jupiterMesh = new THREE.Mesh(jupiterGeometry, jupiterMaterial); //creation de jupiter
         jupiterMesh.position.x=140;
         jupiterGroup = new THREE.Group(); //creation du groupe
@@ -239,14 +239,14 @@
 
         europaGeometry = new THREE.SphereGeometry(1,50,50);
         europaTexture = new THREE.TextureLoader().load("textures/europaTexture.jpg");
-        europaMaterial = new THREE.MeshBasicMaterial( {map:europaTexture} );
+        europaMaterial = new THREE.MeshPhongMaterial( {map:europaTexture} );
         europaMesh = new THREE.Mesh(europaGeometry, europaMaterial);
 
         // creation de la deuxieme lunes
 
         enceladusGeometry = new THREE.SphereGeometry(1,50,50);
         enceladusTexture = new THREE.TextureLoader().load("textures/enceladusTexture.jpg");
-        enceladusMaterial = new THREE.MeshBasicMaterial( {map:enceladusTexture} );
+        enceladusMaterial = new THREE.MeshPhongMaterial( {map:enceladusTexture} );
         enceladusMesh = new THREE.Mesh(enceladusGeometry, enceladusMaterial);
 
         // creation d'un groupe par lune pour faire tourner autour de jupiter et on les add au group de jupiter
@@ -270,7 +270,7 @@
         //setup de la planete
         asteroPlanetoGeo = new THREE.SphereGeometry(12,50,50);
         asteroPlanetoTexture = new THREE.TextureLoader().load("textures/asteroidPlanet.jpg")
-        asteroPlanetoMaterial = new THREE.MeshBasicMaterial( {map:asteroPlanetoTexture} );
+        asteroPlanetoMaterial = new THREE.MeshPhongMaterial( {map:asteroPlanetoTexture} );
         asteroPlanetoMesh = new THREE.Mesh(asteroPlanetoGeo, asteroPlanetoMaterial);
         asteroPlanetoMesh.position.x = -200;
         asteroPlanetoMesh.rotation.x = 0.2;
@@ -292,7 +292,7 @@
                 var randomZ = Math.random();
                 var asteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ); // creation d'un cude a l'aide des aleatoires
                 var asteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif");
-                var asteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
+                var asteroidMaterial = new THREE.MeshPhongMaterial( {map:asteroidTexture} );
                 //to make a circle shape with the asteroids (uniformally fill a circle)
                 var a = Math.random() * 2 * Math.PI; // ensuite on va faire des random pour la positions de l'asteroide
                 var r = asteroidMaxRadius * Math.sqrt(Math.random());
@@ -407,7 +407,7 @@
                 var randomZ = Math.random();
                 var envAsteroidGeometry = new THREE.BoxGeometry(randomX, randomY, randomZ);
                 var envAsteroidTexture = new THREE.TextureLoader().load("textures/asteroid.jfif"); //on leur applique la bonne texture
-                var envAsteroidMaterial = new THREE.MeshBasicMaterial( {map:asteroidTexture} );
+                var envAsteroidMaterial = new THREE.MeshPhongMaterial( {map:asteroidTexture} );
                 //creation d'une taille random
                 var a = Math.random() * 2 * Math.PI;
                 var r = envAsteroidMaxRadius * Math.sqrt(Math.random());
@@ -426,7 +426,7 @@
     cometGroup=[];
     for(let i=0;i<100;i++) { //FOR qui va nous permettre de creer des petites particules qui bouges
         let cometGeo = new THREE.IcosahedronGeometry(1); // creation d'une geometrie
-        let materialComet = new THREE.MeshBasicMaterial({color: white});// le material
+        let materialComet = new THREE.MeshPhongMaterial({color: white});// le material
         let meshGeo = new THREE.Mesh(cometGeo, materialComet);//le mesh
         scene.add(meshGeo); // on add ca dans la scene
         cometGroup.push(meshGeo);// et on push le mesh dans le tableau de comet
@@ -474,7 +474,7 @@
 
         skybox=new THREE.SphereGeometry(500,500,500);//creation d'une sphere enorme qui va nous servir de skybox
         skyboxTexture = new THREE.TextureLoader().load("textures/space.png");//on init une texture
-        skyboxMaterial=new THREE.MeshBasicMaterial({map:skyboxTexture,side:THREE.DoubleSide});//on init un material et on le DOUBLESIDE pour qu'on puisse voir la texture a l'interieur
+        skyboxMaterial=new THREE.MeshPhongMaterial({map:skyboxTexture,side:THREE.DoubleSide});//on init un material et on le DOUBLESIDE pour qu'on puisse voir la texture a l'interieur
         skyboxMesh=new THREE.Mesh(skybox,skyboxMaterial); //creation du mesh
         scene.add(skyboxMesh); // on l'ajoute a la scene
 
