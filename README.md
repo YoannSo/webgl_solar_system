@@ -17,9 +17,9 @@
 >## Project:
 For this project we had to design a solar system using threeJS (Javascript library). Once we had the basic structure up and running we each focused on our own planets with custom textures.
 
-Completed in the third year of my Computer Science degree at the F.S.T Limoges (France) with Yoann SOCHAJ and Benjamin MAUREL.
+🕙 Completed in the third year of my Computer Science degree at the F.S.T Limoges (France) with Yoann SOCHAJ and Benjamin MAUREL.
 
-Class: WebGL
+📚 Class: WebGL
 
 >## Features:
 - User controlled camera
